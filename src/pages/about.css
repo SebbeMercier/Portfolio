@@ -1,0 +1,186 @@
+/* src/pages/About.css */
+.about-container {
+    padding-top: 72px;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #0a0a1a, #1a1a2e);
+    color: white;
+    overflow-x: hidden;
+}
+
+.about-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.about-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    font-weight: bold;
+}
+
+.text-purple {
+    color: #a855f7;
+}
+
+.about-description {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 4rem;
+}
+
+.about-description p {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.orbits-container {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    margin: 0 auto;
+}
+
+.center-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 100px rgba(168, 85, 247, 0.5);
+    z-index: 10;
+}
+
+.initials {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.orbits {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+}
+
+.orbit-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--size);
+    height: var(--size);
+    border: 1px dashed rgba(168, 85, 247, 0.2);
+    border-radius: 50%;
+}
+
+.technologies {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+}
+
+.technology {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%));
+}
+
+.tech-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(30, 41, 59, 0.8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+.tech-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+}
+
+.tech-icon img {
+    width: 28px;
+    height: 28px;
+}
+
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 4rem;
+    padding: 1rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(30, 41, 59, 0.5);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid rgba(107, 114, 128, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+.legend-item img {
+    width: 20px;
+    height: 20px;
+}
+
+.legend-item span {
+    font-size: 0.9rem;
+    color: #e2e8f0;
+}
+
+/* Lignes de connexion (créées avec pseudo-éléments) */
+.technology::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1px;
+    height: calc(var(--distance) * 1px);
+    background: linear-gradient(to bottom, transparent, rgba(168, 85, 247, 0.2));
+    transform-origin: top center;
+    transform: translate(-50%, -50%) rotate(calc(var(--angle) * -1deg));
+    z-index: -1;
+}
+
+@media (max-width: 768px) {
+    .orbits-container {
+        height: 500px;
+    }
+
+    .tech-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .tech-icon img {
+        width: 20px;
+        height: 20px;
+    }
+}
