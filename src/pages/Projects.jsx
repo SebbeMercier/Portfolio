@@ -20,7 +20,7 @@ const projectsData = [
     {
         id: 1,
         title: "Eldocam.com",
-        description: "Refonte complète du site avec animations et optimisation SEO.",
+        description: "Amélioratio, des performances du site web",
         tags: ["React", "Golang", "GSAP"],
         image: "/images/eldocam-preview.jpg",
         links: {
@@ -33,8 +33,8 @@ const projectsData = [
     {
         id: 2,
         title: "Cedra-shop.eu",
-        description: "Plateforme e-commerce avec apps mobiles et backend Node.js.",
-        tags: ["React Native", "Node.js", "MongoDB"],
+        description: "Plateforme e-commerce avec apps mobiles et backend Golang.",
+        tags: ["NextJS", "GoLang", "Redis" , "Elasticsearch"],
         image: "/images/cedra-shop-preview.jpg",
         links: {
             web: "https://cedra-shop.eu",

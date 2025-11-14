@@ -1,6 +1,6 @@
 // src/components/Navbar.jsx
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';  // Import correct de NavLink
+import { NavLink } from 'react-router-dom';  // Import correct de NavLink
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
