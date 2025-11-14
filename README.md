@@ -8,7 +8,7 @@
 
 **Portfolio moderne et interactif avec animations avancées**
 
-[🌐 Démo Live](https://votre-portfolio.com) • [📧 Contact](mailto:contact@sebbe-mercier.com)
+[🌐 Démo Live](https://votre-portfolio.com) • [📧 Contact](mailto:info@sebbe-mercier.tech)
 
 </div>
 
@@ -44,7 +44,7 @@
 ```bash
 
 # Cloner le repository
-git clone https://github.com/votre-username/portfolio.git
+git clone https://github.com/SebbeMercier/Portfolio
 
 # Aller dans le dossier
 cd portfolio
