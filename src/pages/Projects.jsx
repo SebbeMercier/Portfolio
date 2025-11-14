@@ -39,8 +39,7 @@ const projectsData = [
         links: {
             web: "https://cedra-shop.eu",
             githubFront: "https://github.com/votre/cedra-front",
-            githubBack: null // null si pas de backend séparé
-        },
+            githubBack: "https://github.com/SebbeMercier/Cedra_back_end.git"        },
         orientation: "right"
     },
 ];

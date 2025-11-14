@@ -1,9 +1,12 @@
+// Home.jsx
 import Hero from '../components/Hero';
+import AboutComponent from '../components/about';
 
 const Home = () => {
     return (
-        <main className="pt-[72px]"> {/* 72px = hauteur Navbar + marge */}
+        <main className="pt-[72px]">
             <Hero />
+            <AboutComponent />
         </main>
     );
 };

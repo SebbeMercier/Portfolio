@@ -1,70 +1,57 @@
-# Getting Started with Create React App
+#  Portfolio - Sebbe Mercier
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<div align="center">
 
-## Available Scripts
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
-In the project directory, you can run:
+**Portfolio moderne et interactif avec animations avancées**
 
-### `npm start`
+[🌐 Démo Live](https://votre-portfolio.com) • [📧 Contact](mailto:contact@sebbe-mercier.com)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+</div>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## ✨ Fonctionnalités
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- 🎨 **Design Moderne** - Interface élégante avec dégradés et effets glassmorphism
+- 🌊 **Animations Fluides** - Particules flottantes, effets de hover sophistiqués
+- 📱 **Responsive Design** - Optimisé pour mobile, tablette et desktop
+- 🎯 **Section Hero** - Présentation dynamique avec avatar animé
+- 💼 **Section About** - Visualisation des compétences en orbite (desktop) et grille (mobile)
+- 🎭 **Effets Visuels** - Particules animées, dégradés personnalisés, transitions douces
+- ⚡ **Performance** - Build optimisé avec Vite
+- 🎨 **Thème Sombre** - Palette de couleurs purple/noir élégante
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🛠️ Technologies
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Frontend
+- **React 18** - Bibliothèque UI
+- **Tailwind CSS** - Framework CSS utility-first
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🚀 Installation
 
-### `npm run eject`
+### Prérequis
+- Node.js >= 18.0.0
+- npm ou yarn
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Installation locale
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Cloner le repository
+git clone https://github.com/votre-username/portfolio.git
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# Aller dans le dossier
+cd portfolio
 
-## Learn More
+# Installer les dépendances
+npm install
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# Lancer le serveur de développement
+npm run dev
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
