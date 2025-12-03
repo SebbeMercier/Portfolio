@@ -6,9 +6,9 @@ const About = () => {
     const mobileRef = useRef(null); // Nouveau ref pour la section mobile
     const [dimensions, setDimensions] = useState({ width: 0, height: 0, centerX: 0, centerY: 0 });
     const [isVisible, setIsVisible] = useState(false);
-    const [, setIsMobile] = useState(false);
+    const [,setIsMobile] = useState(false);
 
-    // Technologies - Liste simple pour la grille mobile
+    // Technologies grille mobile
     const technologies = [
         { name: "Html 5", icon: "https://skillicons.dev/icons?i=html" },
         { name: "CSS3", icon: "https://skillicons.dev/icons?i=css" },
@@ -23,17 +23,22 @@ const About = () => {
         { name: "mongoDB", icon: "https://skillicons.dev/icons?i=mongo" },
         { name: "Redis", icon: "https://skillicons.dev/icons?i=redis" },
         { name: "ElasticSearch", icon: "https://skillicons.dev/icons?i=elasticsearch" },
+        { name: "Cloudflare", icon: "https://skillicons.dev/icons?i=cloudflare"},
+        { name: "Github", icon: "https://skillicons.dev/icons?i=github"},
+        { name: "Redhat", icon: "https://skillicons.dev/icons?i=redhat"},
+
     ];
 
-    // Technologies avec lignes pour desktop
+    // lignes pour desktop
     const technologiesDesktop = [
-        // Ligne 1 (la plus haute)
         { name: "Html 5", icon: "https://skillicons.dev/icons?i=html", line: 1 },
         { name: "CSS3", icon: "https://skillicons.dev/icons?i=css", line: 1 },
         { name: "Node.js", icon: "https://skillicons.dev/icons?i=nodejs", line: 1 },
         { name: "Redis", icon: "https://skillicons.dev/icons?i=redis", line: 1 },
         { name: "JavaScript", icon: "https://skillicons.dev/icons?i=js", line: 1 },
         { name: "ElasticSearch", icon: "https://skillicons.dev/icons?i=elasticsearch", line: 1 },
+        { name: "Cloudflare", icon: "https://skillicons.dev/icons?i=cloudflare", line: 1 },
+
 
         // Ligne 2 (juste au-dessus du logo)
         { name: "PostgreSQL", icon: "https://skillicons.dev/icons?i=postgres", line: 2 },
@@ -43,6 +48,9 @@ const About = () => {
         { name: "React", icon: "https://skillicons.dev/icons?i=react", line: 2 },
         { name: "Golang", icon: "https://skillicons.dev/icons?i=golang", line: 2 },
         { name: "nextJS", icon: "https://skillicons.dev/icons?i=nextjs", line: 2 },
+        { name: "Github", icon: "https://skillicons.dev/icons?i=github", line: 2 },
+        { name: "Redhat", icon: "https://skillicons.dev/icons?i=redhat", line: 2 },
+
     ];
 
     const calculatePositions = () => {

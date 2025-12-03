@@ -6,7 +6,7 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div>
                         <h3 className="text-white font-bold mb-4">Sebbe Mercier</h3>
-                        <p className="text-white/60">Étudiant en développement web à Isa Gosselies.</p>
+                        <p className="text-white/60">A Full stack developper</p>
                     </div>
                     <div>
                         <h3 className="text-white font-bold mb-4">Liens rapides</h3>
@@ -17,8 +17,8 @@ const Footer = () => {
                         </ul>
                     </div>
                     <div>
-                        <h3 className="text-white font-bold mb-4">Contact</h3>
-                        <p className="text-white/60">sebbemercier@example.com</p>
+                     <a href="/contact"><h3 className="text-white font-bold mb-4">Contact</h3></a>
+                        <a href="mailto:info@sebbe-mercier.tech" className="text-white/60">info@sebbe-mercier.tech</a>
                     </div>
                 </div>
                 <div className="border-t border-gray-800 mt-8 pt-8 text-center text-white/60">

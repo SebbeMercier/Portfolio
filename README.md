@@ -22,7 +22,6 @@
 - 🎯 **Section Hero** - Présentation dynamique avec avatar animé
 - 💼 **Section About** - Visualisation des compétences en orbite (desktop) et grille (mobile)
 - 🎭 **Effets Visuels** - Particules animées, dégradés personnalisés, transitions douces
-- ⚡ **Performance** - Build optimisé avec Vite
 - 🎨 **Thème Sombre** - Palette de couleurs purple/noir élégante
 
 ---

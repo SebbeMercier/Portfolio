@@ -1,34 +1,63 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* Smooth scrolling pour les ancres */
-html {
-    scroll-behavior: smooth;
+
+@layer base {
+    :root {
+        --background: 0 0% 5%;
+        --foreground: 0 0% 98%;
+        --card: 0 0% 9%;
+        --card-foreground: 0 0% 98%;
+        --popover: 0 0% 9%;
+        --popover-foreground: 0 0% 98%;
+        --primary: 0 0% 98%;
+        --primary-foreground: 0 0% 9%;
+        --secondary: 0 0% 15%;
+        --secondary-foreground: 0 0% 98%;
+        --muted: 0 0% 15%;
+        --muted-foreground: 0 0% 64%;
+        --accent: 0 0% 15%;
+        --accent-foreground: 0 0% 98%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 0 0% 15%;
+        --input: 0 0% 15%;
+        --ring: 0 0% 83.1%;
+        --radius: 0.5rem;
+    }
 }
 
+@layer base {
+    * {
+        @apply border-border;
+    }
 
-/* Animation de fade-in basique */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    }
+}
+
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
 }
 
-/* Classe utilitaire pour Tailwind */
 .animate-fadeIn {
     animation: fadeIn 1s ease-in forwards;
 }
+.animate-fade-in-up {
+    opacity: 0;
+    animation: fade-in-up 1s ease-out 0.3s forwards;
+}
 
-
-/* Réduire la taille de la police sur mobile si nécessaire */
 @media (max-width: 640px) {
     html {
         font-size: 14px;
     }
-}
-
-/* Empêcher le zoom sur mobile */
-html {
-    -webkit-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;
-    text-size-adjust: 100%;
 }
