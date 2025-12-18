@@ -1,0 +1,638 @@
+// Composant pour gérer et tester le système de CV dynamique
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { 
+  Download, Eye, Database, RefreshCw, 
+  CheckCircle, AlertCircle, Sparkles,
+  BarChart3, Briefcase, Award
+} from 'lucide-react';
+import { useCVGenerator } from '../hooks/useCVGenerator';
+import { getCVDownloadStats } from '../services/cvService';
+import toast from 'react-hot-toast';
+
+// shadcn/ui imports
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Progress } from './ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Separator } from './ui/separator';
+
+const CVManager = () => {
+  const { 
+    generateAndDownloadCV, 
+    previewCV, 
+    fetchCVData,
+    cvData,
+    isGenerating,
+    error 
+  } = useCVGenerator();
+
+  const [stats, setStats] = useState({ total: 0, thisMonth: 0, sources: {} });
+  const [isSeeding, setIsSeeding] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState(null);
+
+  // Charger les données au montage
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      await fetchCVData();
+      const downloadStats = await getCVDownloadStats();
+      setStats(downloadStats);
+      setLastUpdate(new Date());
+    } catch (error) {
+      console.error('Erreur chargement données:', error);
+    }
+  };
+
+  const handleSeedData = async () => {
+    setIsSeeding(true);
+    try {
+      toast.loading('Peuplement de la base de données...', { id: 'seed-data' });
+      
+      const result = await seedCVDataBrowser();
+      
+      if (result.success) {
+        toast.success(`Données insérées ! ${result.data.experiences} exp, ${result.data.skills} skills, ${result.data.projects} projets`, 
+          { id: 'seed-data', duration: 5000 });
+        await loadData(); // Recharger les données
+      } else {
+        toast.error(`Erreur: ${result.error}`, { id: 'seed-data' });
+      }
+    } catch (error) {
+      toast.error('Erreur lors du peuplement', { id: 'seed-data' });
+      console.error('Erreur seed:', error);
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
+  // Version browser-compatible du seeding
+  const seedCVDataBrowser = async () => {
+    console.log('🌱 Début du peuplement des données CV...');
+
+    try {
+      // Import dynamique du service supabase
+      const { supabase } = await import('../services/supabase');
+
+      // 1. Insérer les expériences
+      console.log('📊 Insertion des expériences...');
+      const experiences = [
+        {
+          title: 'Développeur Full Stack Senior',
+          company: 'TechCorp Solutions',
+          location: 'Paris, France',
+          description: 'Développement d\'applications web modernes avec React et Node.js. Gestion d\'équipe de 3 développeurs juniors.',
+          start_date: '2022-01-01',
+          end_date: null,
+          current: true,
+          type: 'work',
+          technologies: ['React', 'Node.js', 'TypeScript', 'PostgreSQL', 'AWS'],
+          achievements: [
+            'Amélioration des performances de 40%',
+            'Migration vers TypeScript',
+            'Mise en place CI/CD'
+          ]
+        },
+        {
+          title: 'Développeur React',
+          company: 'StartupInnovante',
+          location: 'Lyon, France',
+          description: 'Développement d\'une plateforme SaaS en React. Intégration d\'APIs tierces et optimisation SEO.',
+          start_date: '2020-06-01',
+          end_date: '2021-12-31',
+          current: false,
+          type: 'work',
+          technologies: ['React', 'Redux', 'Node.js', 'MongoDB'],
+          achievements: [
+            'Développement de 0 à 10k utilisateurs',
+            'Intégration Stripe et PayPal'
+          ]
+        },
+        {
+          title: 'Master Informatique',
+          company: 'Université de Technologie',
+          location: 'France',
+          description: 'Spécialisation en développement web et bases de données.',
+          start_date: '2017-09-01',
+          end_date: '2019-06-30',
+          current: false,
+          type: 'education',
+          technologies: ['Java', 'Python', 'SQL', 'JavaScript'],
+          achievements: ['Mention Bien', 'Projet de fin d\'études en React']
+        }
+      ];
+
+      const { error: expError } = await supabase
+        .from('experiences')
+        .upsert(experiences, { onConflict: 'title,company' });
+
+      if (expError) {
+        console.error('❌ Erreur insertion expériences:', expError);
+      } else {
+        console.log('✅ Expériences insérées');
+      }
+
+      // 2. Insérer les compétences
+      console.log('🚀 Insertion des compétences...');
+      const skills = [
+        // Frontend
+        { name: 'React', category: 'frontend', level: 5, years_experience: 4, color: '#61DAFB' },
+        { name: 'TypeScript', category: 'frontend', level: 4, years_experience: 3, color: '#3178C6' },
+        { name: 'Next.js', category: 'frontend', level: 4, years_experience: 2, color: '#000000' },
+        { name: 'Tailwind CSS', category: 'frontend', level: 5, years_experience: 3, color: '#06B6D4' },
+        { name: 'JavaScript', category: 'frontend', level: 5, years_experience: 5, color: '#F7DF1E' },
+        
+        // Backend
+        { name: 'Node.js', category: 'backend', level: 4, years_experience: 4, color: '#339933' },
+        { name: 'PostgreSQL', category: 'backend', level: 4, years_experience: 3, color: '#336791' },
+        { name: 'Supabase', category: 'backend', level: 4, years_experience: 2, color: '#3ECF8E' },
+        
+        // Tools
+        { name: 'Git', category: 'tools', level: 5, years_experience: 5, color: '#F05032' },
+        { name: 'Docker', category: 'tools', level: 3, years_experience: 2, color: '#2496ED' },
+        { name: 'AWS', category: 'tools', level: 3, years_experience: 2, color: '#FF9900' }
+      ];
+
+      const { error: skillsError } = await supabase
+        .from('skills')
+        .upsert(skills, { onConflict: 'name' });
+
+      if (skillsError) {
+        console.error('❌ Erreur insertion compétences:', skillsError);
+      } else {
+        console.log('✅ Compétences insérées');
+      }
+
+      // 3. Insérer les projets
+      console.log('🎨 Insertion des projets...');
+      const projects = [
+        {
+          title: 'E-commerce Modern',
+          slug: 'ecommerce-modern',
+          description: 'Plateforme e-commerce complète avec panier, paiements et gestion admin.',
+          long_description: 'Développement d\'une plateforme e-commerce moderne avec React, Node.js et Stripe.',
+          technologies: ['React', 'Node.js', 'PostgreSQL', 'Stripe', 'Tailwind CSS'],
+          github_url: 'https://github.com/sebbe/ecommerce-modern',
+          demo_url: 'https://ecommerce-demo.sebbe-mercier.tech',
+          images: ['/images/projects/ecommerce-1.jpg'],
+          featured: true,
+          status: 'completed',
+          start_date: '2023-01-01',
+          end_date: '2023-03-31',
+          client: 'Client Privé',
+          category: 'E-commerce'
+        },
+        {
+          title: 'Dashboard Analytics',
+          slug: 'dashboard-analytics',
+          description: 'Dashboard d\'analytics en temps réel avec graphiques interactifs.',
+          long_description: 'Interface de visualisation de données avec graphiques D3.js.',
+          technologies: ['React', 'D3.js', 'Node.js', 'MongoDB'],
+          github_url: 'https://github.com/sebbe/dashboard-analytics',
+          demo_url: 'https://dashboard-demo.sebbe-mercier.tech',
+          images: ['/images/projects/dashboard-1.jpg'],
+          featured: true,
+          status: 'completed',
+          start_date: '2023-04-01',
+          end_date: '2023-06-30',
+          client: 'StartupTech',
+          category: 'SaaS'
+        }
+      ];
+
+      const { error: projectsError } = await supabase
+        .from('projects')
+        .upsert(projects, { onConflict: 'slug' });
+
+      if (projectsError) {
+        console.error('❌ Erreur insertion projets:', projectsError);
+      } else {
+        console.log('✅ Projets insérés');
+      }
+
+      console.log('🎉 Peuplement des données CV terminé avec succès !');
+      
+      return {
+        success: true,
+        data: {
+          experiences: experiences.length,
+          skills: skills.length,
+          projects: projects.length
+        }
+      };
+
+    } catch (error) {
+      console.error('❌ Erreur lors du peuplement:', error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto p-6 space-y-8">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4"
+        >
+          <h1 className="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            Gestionnaire CV Dynamique
+          </h1>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            Génération de CV basée sur les données de la base de données avec design moderne
+          </p>
+          <Badge variant="secondary" className="bg-purple-500/20 text-purple-300 border-purple-500/30">
+            <Database className="w-4 h-4 mr-2" />
+            Alimenté par Supabase
+          </Badge>
+        </motion.div>
+      </div>
+
+      {/* Stats Cards avec shadcn/ui */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-500/20 hover:border-blue-500/40 transition-all duration-300">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-blue-500/20 rounded-xl">
+                  <Briefcase className="w-6 h-6 text-blue-400" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Expériences</p>
+                  <p className="text-2xl font-bold text-white">
+                    {cvData?.experiences?.length || 0}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-500/20 hover:border-green-500/40 transition-all duration-300">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-green-500/20 rounded-xl">
+                  <Award className="w-6 h-6 text-green-400" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Compétences</p>
+                  <p className="text-2xl font-bold text-white">
+                    {cvData?.skills?.length || 0}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-purple-500/20 hover:border-purple-500/40 transition-all duration-300">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-purple-500/20 rounded-xl">
+                  <Sparkles className="w-6 h-6 text-purple-400" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Projets</p>
+                  <p className="text-2xl font-bold text-white">
+                    {cvData?.projects?.length || 0}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border-orange-500/20 hover:border-orange-500/40 transition-all duration-300">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-orange-500/20 rounded-xl">
+                  <BarChart3 className="w-6 h-6 text-orange-400" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Téléchargements</p>
+                  <p className="text-2xl font-bold text-white">{stats.total}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* Interface avec onglets */}
+      <Tabs defaultValue="actions" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 bg-white/5 border border-white/10">
+          <TabsTrigger value="actions" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300">
+            Actions CV
+          </TabsTrigger>
+          <TabsTrigger value="database" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300">
+            Base de Données
+          </TabsTrigger>
+          <TabsTrigger value="stats" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300">
+            Statistiques
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="actions" className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* CV Actions */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
+              <Card className="bg-white/5 border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Database className="w-5 h-5 text-purple-400" />
+                    Actions CV
+                  </CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Générer, prévisualiser et télécharger votre CV
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Button
+                    onClick={() => generateAndDownloadCV('manager')}
+                    disabled={isGenerating}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                    size="lg"
+                  >
+                    {isGenerating ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent 
+                                    rounded-full animate-spin mr-2" />
+                    ) : (
+                      <Download className="w-4 h-4 mr-2" />
+                    )}
+                    Générer et Télécharger
+                  </Button>
+
+                  <Button
+                    onClick={previewCV}
+                    disabled={isGenerating}
+                    variant="outline"
+                    className="w-full border-purple-500/30 text-purple-300 hover:bg-purple-500/10"
+                    size="lg"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    Aperçu
+                  </Button>
+
+                  <Button
+                    onClick={loadData}
+                    variant="secondary"
+                    className="w-full bg-gray-600 hover:bg-gray-700 text-white"
+                    size="lg"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Actualiser les données
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Database Management */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
+              <Card className="bg-white/5 border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Database className="w-5 h-5 text-green-400" />
+                    Gestion Base de Données
+                  </CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Peupler et gérer les données de votre CV
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Button
+                    onClick={handleSeedData}
+                    disabled={isSeeding}
+                    className="w-full bg-green-500 hover:bg-green-600 text-white"
+                    size="lg"
+                  >
+                    {isSeeding ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent 
+                                    rounded-full animate-spin mr-2" />
+                    ) : (
+                      <Database className="w-4 h-4 mr-2" />
+                    )}
+                    Peupler les données
+                  </Button>
+
+                  <Alert className="bg-green-500/10 border-green-500/20">
+                    <AlertCircle className="h-4 w-4 text-green-400" />
+                    <AlertDescription className="text-green-300">
+                      Injecte des données d'exemple dans la base de données pour tester le système de CV dynamique.
+                    </AlertDescription>
+                  </Alert>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="database" className="mt-6">
+          <Card className="bg-white/5 border-white/10">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Database className="w-5 h-5 text-blue-400" />
+                État de la Base de Données
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Informations sur les données disponibles pour le CV
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Progress bars pour chaque type de données */}
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-gray-300">Expériences</span>
+                    <Badge variant="secondary" className="bg-blue-500/20 text-blue-300">
+                      {cvData?.experiences?.length || 0} entrées
+                    </Badge>
+                  </div>
+                  <Progress 
+                    value={Math.min((cvData?.experiences?.length || 0) * 20, 100)} 
+                    className="h-2 bg-gray-700"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-gray-300">Compétences</span>
+                    <Badge variant="secondary" className="bg-green-500/20 text-green-300">
+                      {cvData?.skills?.length || 0} entrées
+                    </Badge>
+                  </div>
+                  <Progress 
+                    value={Math.min((cvData?.skills?.length || 0) * 10, 100)} 
+                    className="h-2 bg-gray-700"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-gray-300">Projets</span>
+                    <Badge variant="secondary" className="bg-purple-500/20 text-purple-300">
+                      {cvData?.projects?.length || 0} entrées
+                    </Badge>
+                  </div>
+                  <Progress 
+                    value={Math.min((cvData?.projects?.length || 0) * 25, 100)} 
+                    className="h-2 bg-gray-700"
+                  />
+                </div>
+              </div>
+
+              <Separator className="bg-white/10" />
+
+              {/* État du système */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center gap-3">
+                  {cvData ? (
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                  ) : (
+                    <AlertCircle className="w-5 h-5 text-yellow-400" />
+                  )}
+                  <span className="text-white">
+                    Données CV: {cvData ? 'Chargées' : 'Non chargées'}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {error ? (
+                    <AlertCircle className="w-5 h-5 text-red-400" />
+                  ) : (
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                  )}
+                  <span className="text-white">
+                    Système: {error ? 'Erreur' : 'Opérationnel'}
+                  </span>
+                </div>
+              </div>
+
+              {lastUpdate && (
+                <p className="text-sm text-gray-400">
+                  Dernière mise à jour: {lastUpdate.toLocaleString('fr-FR')}
+                </p>
+              )}
+
+              {error && (
+                <Alert className="bg-red-500/10 border-red-500/20">
+                  <AlertCircle className="h-4 w-4 text-red-400" />
+                  <AlertDescription className="text-red-300">
+                    {error}
+                  </AlertDescription>
+                </Alert>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="stats" className="mt-6">
+          {stats.total > 0 ? (
+            <Card className="bg-white/5 border-white/10">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-orange-400" />
+                  Statistiques de Téléchargement
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Analyse des téléchargements de CV
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-white mb-1">{stats.total}</p>
+                    <p className="text-sm text-gray-400">Total</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-purple-400 mb-1">{stats.thisMonth}</p>
+                    <p className="text-sm text-gray-400">Ce mois</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-green-400 mb-1">
+                      {Math.round((stats.thisMonth / stats.total) * 100) || 0}%
+                    </p>
+                    <p className="text-sm text-gray-400">Croissance</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-blue-400 mb-1">
+                      {Object.keys(stats.sources).length}
+                    </p>
+                    <p className="text-sm text-gray-400">Sources</p>
+                  </div>
+                </div>
+
+                <Separator className="bg-white/10 mb-6" />
+
+                <div>
+                  <h4 className="text-lg font-semibold text-white mb-4">Sources de Téléchargement</h4>
+                  <div className="space-y-3">
+                    {Object.entries(stats.sources).map(([source, count]) => (
+                      <div key={source} className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Badge variant="outline" className="border-purple-500/30 text-purple-300">
+                            {source}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Progress 
+                            value={(count / stats.total) * 100} 
+                            className="w-24 h-2 bg-gray-700"
+                          />
+                          <span className="text-white font-medium w-8 text-right">{count}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="bg-white/5 border-white/10">
+              <CardContent className="text-center py-12">
+                <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-white mb-2">Aucune statistique</h3>
+                <p className="text-gray-400">
+                  Les statistiques apparaîtront après les premiers téléchargements de CV.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
+
+
+    </div>
+  );
+};
+
+export default CVManager;

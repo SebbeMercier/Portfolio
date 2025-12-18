@@ -1,13 +1,14 @@
 // src/pages/Contact.jsx
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Mail, MapPin, Phone, Send, Github, Linkedin, Instagram } from 'lucide-react';
+import { animate, stagger } from 'animejs';
 import { Button } from '../components/ui/button';
 import { Input } from  '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
-import { useToast } from '../hooks/use-toast';
+import { useSectionGradient } from '../hooks/useSectionGradient';
 
 const Contact = () => {
-    const { toast } = useToast();
+    const pageSectionRef = useSectionGradient('#0f0a1f');
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -15,6 +16,39 @@ const Contact = () => {
         message: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const headerRef = useRef(null);
+    const cardsRef = useRef(null);
+    const formRef = useRef(null);
+
+    useEffect(() => {
+        // Animation du header
+        animate(headerRef.current, {
+            opacity: [0, 1],
+            translateY: [-30, 0],
+            duration: 1000,
+            easing: 'out-expo'
+        });
+
+        // Animation des cartes de contact en cascade
+        if (cardsRef.current) {
+            animate(cardsRef.current.children, {
+                opacity: [0, 1],
+                translateX: [-30, 0],
+                delay: stagger(150),
+                duration: 800,
+                easing: 'out-expo'
+            });
+        }
+
+        // Animation du formulaire
+        animate(formRef.current, {
+            opacity: [0, 1],
+            translateX: [30, 0],
+            duration: 1000,
+            delay: 300,
+            easing: 'out-expo'
+        });
+    }, []);
 
     const contactInfo = [
         {
@@ -58,21 +92,30 @@ const Contact = () => {
 
         // Simulation d'envoi
         setTimeout(() => {
-            toast({
-                title: "Message sent! ✨",
-                description: "I'll get back to you as soon as possible.",
-            });
+            alert("Message sent! ✨\nI'll get back to you as soon as possible.");
             setFormData({ name: '', email: '', subject: '', message: '' });
             setIsSubmitting(false);
         }, 1500);
     };
 
     return (
-        <div className="min-h-screen pt-44 pb-20 px-8 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
+        <div ref={pageSectionRef} className="min-h-screen pt-44 pb-20 px-8 sm:px-6 lg:px-8 bg-gradient-to-b from-[#0a0f1f] via-[#1a1f2e] to-[#0f0a1f] relative overflow-hidden">
+            {/* Enhanced background effects */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-20 right-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse-slow" />
+                <div className="absolute bottom-20 left-20 w-72 h-72 bg-pink-500/10 rounded-full blur-3xl animate-pulse-slow" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-blue-500/5 rounded-full blur-3xl" />
+                
+                {/* Floating particles */}
+                <div className="absolute top-32 left-32 w-1 h-1 bg-purple-400/60 rounded-full animate-bounce" style={{animationDelay: '0s', animationDuration: '4s'}} />
+                <div className="absolute top-64 right-48 w-1.5 h-1.5 bg-pink-400/60 rounded-full animate-bounce" style={{animationDelay: '2s', animationDuration: '5s'}} />
+                <div className="absolute bottom-48 left-1/4 w-1 h-1 bg-blue-400/60 rounded-full animate-bounce" style={{animationDelay: '1s', animationDuration: '3s'}} />
+            </div>
+            
+            <div className="max-w-7xl mx-auto relative z-10">
 
                 {/* Header */}
-                <div className="text-center mb-16">
+                <div ref={headerRef} className="text-center mb-16 opacity-0">
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
                         <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600
                                        bg-clip-text text-transparent">
@@ -90,7 +133,7 @@ const Contact = () => {
                     <div className="lg:col-span-1 space-y-6">
 
                         {/* Contact Cards */}
-                        <div className="space-y-4">
+                        <div ref={cardsRef} className="space-y-4">
                             {contactInfo.map((item, index) => (
                                 <div key={index}
                                      className="group relative overflow-hidden">
@@ -189,7 +232,7 @@ const Contact = () => {
                     </div>
 
                     {/* Contact Form */}
-                    <div className="lg:col-span-2">
+                    <div ref={formRef} className="lg:col-span-2 opacity-0">
                         <div className="relative group">
                             {/* Glow effect */}
                             <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-pink-600

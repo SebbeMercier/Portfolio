@@ -48,7 +48,7 @@ export function HeroArrow() {
 
     return (
         <svg
-            className="hidden lg:block absolute left-[80%] -top-[30px] w-[480px] h-[150px] pointer-events-none z-30"
+            className="hidden lg:block absolute left-[95%] -top-[20px] w-[360px] h-[110px] pointer-events-none z-30"
             viewBox="0 0 480 150"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

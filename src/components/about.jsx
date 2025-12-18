@@ -1,7 +1,9 @@
 // src/components/About.jsx
 import React, { useRef, useEffect, useState } from 'react';
+import { useSectionGradient } from '../hooks/useSectionGradient';
 
 const About = () => {
+    const sectionRef = useSectionGradient('#0a1a2e');
     const containerRef = useRef(null);
     const mobileRef = useRef(null); // Nouveau ref pour la section mobile
     const [dimensions, setDimensions] = useState({ width: 0, height: 0, centerX: 0, centerY: 0 });
@@ -26,6 +28,7 @@ const About = () => {
         { name: "Cloudflare", icon: "https://skillicons.dev/icons?i=cloudflare"},
         { name: "Github", icon: "https://skillicons.dev/icons?i=github"},
         { name: "Redhat", icon: "https://skillicons.dev/icons?i=redhat"},
+        { name: "SupaBase", icon: "https://skillicons.dev/icons?i=supabase" },
 
     ];
 
@@ -50,6 +53,7 @@ const About = () => {
         { name: "nextJS", icon: "https://skillicons.dev/icons?i=nextjs", line: 2 },
         { name: "Github", icon: "https://skillicons.dev/icons?i=github", line: 2 },
         { name: "Redhat", icon: "https://skillicons.dev/icons?i=redhat", line: 2 },
+        { name: "Firebase", icon: "https://skillicons.dev/icons?i=firebase", line: 2 },
 
     ];
 
@@ -137,7 +141,7 @@ const About = () => {
     }, []);
 
     return (
-        <div className="relative min-h-screen bg-gradient-to-b from-[#0f0a1f] via-[#1a0b2e] to-[#0f0a1f] text-white overflow-hidden">
+        <div ref={sectionRef} className="relative min-h-screen bg-gradient-to-b from-[#0a0a1a] via-[#1a1a2e] to-[#0a1a2e] text-white overflow-hidden">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
                        w-[400px] md:w-[800px] h-[400px] md:h-[800px] rounded-full bg-purple-900/20 blur-[80px] md:blur-[120px] animate-pulse-ambient"></div>

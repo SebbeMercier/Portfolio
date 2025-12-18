@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { TypewriterText } from "./TypewriterText";
 
 export function HeroText() {
     const [showImagine, setShowImagine] = useState(false);
@@ -36,7 +37,7 @@ export function HeroText() {
 
     return (
         <motion.div
-            className="space-y-6 -mt-16 lg:-mt-32"
+            className="space-y-6 -mt-12 lg:-mt-28"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -44,27 +45,46 @@ export function HeroText() {
             <motion.div className="space-y-2 relative" variants={itemVariants}>
                 <p className="text-sm sm:text-base text-gray-300 relative z-10">
                     Hello, I'm{" "}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 font-semibold">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 font-semibold inline-block">
                         Sebbe Mercier
                     </span>
                 </p>
 
-                {/* Subtitle */}
+                {/* Subtitle with typewriter effect */}
                 <p className="text-gray-500 text-[9px] sm:text-[10px] uppercase tracking-[0.35em] font-light">
-                    A fullstack developper
+                    <TypewriterText
+                        texts={[
+                            "A fullstack developer",
+                            "A creative coder",
+                            "A problem solver",
+                            "A tech enthusiast"
+                        ]}
+                        typingSpeed={80}
+                        deletingSpeed={40}
+                        pauseDuration={2500}
+                    />
                 </p>
             </motion.div>
 
             {/* Main headline */}
             <motion.h1
-                className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] pt-2"
+                className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.3] pt-2"
                 variants={itemVariants}
             >
-                <span className="block text-white">Front to back</span>
-                <span className="block text-white">I build what others{" "}
+                <span className="block text-white relative overflow-hidden">
+                    <motion.span
+                        className="inline-block"
+                        initial={{ y: 100 }}
+                        animate={{ y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+                    >
+                        Front to back
+                    </motion.span>
+                </span>
+                <span className="block text-white overflow-visible">I build what others{" "}
                     {showImagine && (
                         <motion.span
-                            className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600"
+                            className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600 pb-1"
                             initial={{
                                 opacity: 0,
                                 filter: "blur(10px)",

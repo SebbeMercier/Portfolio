@@ -5,8 +5,12 @@ import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Menu, X } from 'lucide-react';
 
+import { useEasterEgg } from '../hooks/useEasterEgg';
+import DownloadCV from './DownloadCV';
+
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const { handleLogoClick } = useEasterEgg();
 
     const navLinks = [
         { to: "/", label: "Home" },
@@ -39,25 +43,29 @@ const Navbar = () => {
 
                             {/* Logo avec cercle pour photo de profil */}
                             <div className="flex-shrink-0">
-                                <NavLink to="/" className="block">
+                                <div 
+                                    onClick={handleLogoClick}
+                                    className="block cursor-pointer"
+                                    title="Cliquez 5 fois pour un easter egg !"
+                                >
                                     <div className="relative group">
-                                        {/* Halo au hover - SANS PULSE */}
-                                        <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600
-                          rounded-full blur-md opacity-0 group-hover:opacity-75
-                          transition-all duration-500 group-hover:blur-lg"></div>
+                                        {/* Halo au hover - Simplifié */}
+                                        <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600
+                          rounded-full blur-sm opacity-0 group-hover:opacity-50
+                          transition-opacity duration-300"></div>
 
                                         {/* Container de l'image */}
                                         <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden
-                          ring-2 ring-purple-400/20 group-hover:ring-purple-400/80
-                          transition-all duration-500
-                          group-hover:scale-110 group-hover:rotate-3
-                          shadow-lg group-hover:shadow-purple-500/50">
+                          ring-2 ring-purple-400/20 group-hover:ring-purple-400/60
+                          transition-all duration-300
+                          group-hover:scale-105
+                          shadow-lg">
                                             <img
                                                 src="./logo.png"
                                                 alt="Profile"
                                                 className="w-full h-full object-cover
-                             transition-transform duration-500
-                             group-hover:scale-110"
+                             transition-transform duration-300
+                             group-hover:scale-105"
                                             />
                                             {/* Overlay au hover - RETIRÉ LA LUMIÈRE BLANCHE */}
                                             <div className="absolute inset-0 bg-gradient-to-br from-purple-600/0 to-pink-600/0
@@ -65,11 +73,14 @@ const Navbar = () => {
                               transition-all duration-500"></div>
                                         </div>
                                     </div>
-                                </NavLink>
+                                </div>
                             </div>
 
                             {/* Menu Desktop - HOVERS AMÉLIORÉS */}
                             <div className="hidden md:flex items-center space-x-1">
+                                {/* Bouton CV */}
+                                <DownloadCV className="mr-2" />
+
                                 {navLinks.map((link) => (
                                     <NavLink
                                         key={link.to}
