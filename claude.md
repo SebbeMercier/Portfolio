@@ -690,6 +690,151 @@ L'intégration complète du système de fonctionnalités avancées a été **TER
 
 ---
 
+## 📋 Instructions de Commit Git
+
+### 🎯 Format des Messages de Commit
+
+Utilise le format **Conventional Commits** pour des messages clairs et cohérents :
+
+```bash
+<type>(<scope>): <description>
+
+[body optionnel]
+
+[footer optionnel]
+```
+
+### 🏷️ Types de Commit
+
+- **feat**: Nouvelle fonctionnalité
+- **fix**: Correction de bug
+- **docs**: Documentation uniquement
+- **style**: Changements de style (formatage, etc.)
+- **refactor**: Refactoring de code
+- **perf**: Amélioration de performance
+- **test**: Ajout ou modification de tests
+- **chore**: Tâches de maintenance
+
+### 📝 Exemples de Messages
+
+```bash
+# Nouvelle fonctionnalité
+git commit -m "feat: ✨ Système de CV dynamique avec React-PDF
+
+🎯 Nouvelles fonctionnalités:
+- Génération de CV depuis la base de données
+- Design PDF professionnel avec timeline
+- CVManager avec interface shadcn/ui moderne"
+
+# Correction de bug
+git commit -m "fix: 🐛 Correction erreur navigation chatbot
+
+- Fix navigation entre pages
+- Amélioration détection des sections
+- Messages d'erreur plus clairs"
+
+# Documentation
+git commit -m "docs: 📚 Mise à jour guide installation
+
+- Ajout instructions pour shadcn/ui
+- Guide de configuration React-PDF
+- Exemples d'utilisation du CVManager"
+
+# Style/Design
+git commit -m "style: 🎨 Amélioration design CVManager
+
+- Cards avec gradients modernes
+- Animations Framer Motion
+- Interface à onglets avec shadcn/ui"
+
+# Refactoring
+git commit -m "refactor: ♻️ Optimisation hooks CV
+
+- Séparation logique génération/téléchargement
+- Amélioration gestion d'erreurs
+- Performance des requêtes DB"
+```
+
+### 🚀 Workflow de Commit Recommandé
+
+```bash
+# 1. Vérifier les changements
+git status
+git diff
+
+# 2. Ajouter les fichiers
+git add .
+# ou sélectif
+git add src/components/CVManager.jsx src/services/cvService.js
+
+# 3. Commit avec message descriptif
+git commit -m "feat: ✨ Description de la fonctionnalité
+
+Détails des changements:
+- Point 1
+- Point 2
+- Point 3"
+
+# 4. Push vers le repo
+git push origin main
+```
+
+### 🎨 Emojis Recommandés
+
+- ✨ `:sparkles:` - Nouvelle fonctionnalité
+- 🐛 `:bug:` - Correction de bug
+- 📚 `:books:` - Documentation
+- 🎨 `:art:` - Amélioration design/UI
+- ⚡ `:zap:` - Performance
+- 🔧 `:wrench:` - Configuration
+- ♻️ `:recycle:` - Refactoring
+- 🚀 `:rocket:` - Déploiement
+- 🔒 `:lock:` - Sécurité
+- 📱 `:iphone:` - Responsive design
+
+### 📊 Exemple de Commit Complet
+
+```bash
+git add .
+git commit -m "feat: ✨ Système de CV dynamique complet
+
+🎯 Fonctionnalités ajoutées:
+- Génération PDF avec React-PDF depuis la base de données
+- Design moderne avec timeline et barres de progression
+- CVManager avec interface shadcn/ui et onglets
+- Chatbot IA avec navigation intelligente entre pages
+- Tracking des téléchargements et analytics
+
+🎨 Améliorations design:
+- Header PDF avec gradient et icônes
+- Cards projets avec accents colorés
+- Progress bars pour compétences
+- Interface à onglets moderne
+
+🔧 Technique:
+- Hook useCVGenerator pour la logique métier
+- Service cvService pour les données DB
+- Script de peuplement automatique
+- Composants shadcn/ui intégrés
+
+📊 Analytics:
+- Tracking téléchargements par source
+- Statistiques en temps réel
+- États visuels du système"
+
+git push origin main
+```
+
+### 🔄 Bonnes Pratiques
+
+1. **Commits atomiques** : Un commit = une fonctionnalité/fix
+2. **Messages descriptifs** : Expliquer le "quoi" et le "pourquoi"
+3. **Tester avant commit** : S'assurer que le code compile
+4. **Commits fréquents** : Éviter les gros commits monolithiques
+5. **Branches feature** : Utiliser des branches pour les grosses fonctionnalités
+
+---
+
 **Dernière mise à jour**: Décembre 2024
-**Version**: 2.1.0 - Advanced Features Complete
+**Version**: 2.2.0 - CV Dynamique + CVManager shadcn/ui
 **Statut**: Production Ready ✅
