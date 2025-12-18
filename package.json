@@ -42,7 +42,10 @@
     "start": "react-scripts start",
     "dev": "react-scripts start",
     "build": "react-scripts build",
-    "seed:cv": "node scripts/seed-cv-data.js"
+    "build:analyze": "npm run build && npx bundle-analyzer build/static/js/*.js",
+    "seed:cv": "node scripts/seed-cv-data.js",
+    "deploy:vercel": "vercel --prod",
+    "deploy:netlify": "netlify deploy --prod --dir=build"
   },
   "eslintConfig": {
     "extends": [

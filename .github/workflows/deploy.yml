@@ -1,0 +1,47 @@
+name: 🚀 Deploy Portfolio
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Bun
+      uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: latest
+        
+    - name: 📦 Install dependencies
+      run: bun install
+      
+    - name: 🏗️ Build project
+      run: bun run build
+      env:
+        REACT_APP_SUPABASE_URL: ${{ secrets.REACT_APP_SUPABASE_URL }}
+        REACT_APP_SUPABASE_ANON_KEY: ${{ secrets.REACT_APP_SUPABASE_ANON_KEY }}
+        REACT_APP_ALLOWED_EMAILS: ${{ secrets.REACT_APP_ALLOWED_EMAILS }}
+        REACT_APP_TURNSTILE_SITE_KEY: ${{ secrets.REACT_APP_TURNSTILE_SITE_KEY }}
+        
+    - name: 🧪 Run tests (if any)
+      run: echo "No tests configured yet"
+      
+    - name: 📊 Build size analysis
+      run: |
+        echo "Build completed successfully!"
+        du -sh build/
+        echo "Main bundle sizes:"
+        ls -lh build/static/js/ | head -5
+        
+    - name: 🎉 Deploy success notification
+      run: |
+        echo "✅ Portfolio build completed successfully!"
+        echo "📦 Build size: $(du -sh build/ | cut -f1)"
+        echo "🚀 Ready for deployment to Vercel/Netlify"
