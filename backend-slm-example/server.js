@@ -27,10 +27,10 @@ const startOllama = () => {
 // Télécharger le modèle au premier démarrage
 const downloadModel = async () => {
   return new Promise((resolve) => {
-    console.log('📥 Téléchargement de Phi-3-mini...');
-    const download = spawn('ollama', ['pull', 'phi3:mini'], { stdio: 'inherit' });
+    console.log('📥 Téléchargement de Phi-4-mini (plus récent et performant)...');
+    const download = spawn('ollama', ['pull', 'phi4-mini-reasoning'], { stdio: 'inherit' });
     download.on('close', () => {
-      console.log('✅ Modèle téléchargé');
+      console.log('✅ Modèle Phi-4-mini téléchargé');
       resolve();
     });
   });
@@ -46,29 +46,31 @@ app.post('/api/chat', async (req, res) => {
     
 Informations sur Sebbe :
 - Développeur Full Stack avec 4+ ans d'expérience
-- Spécialités : React, TypeScript, Node.js, Supabase
-- Projets : Portfolio moderne, E-commerce, Dashboard Analytics
-- Localisation : Belgique
+- Spécialités : React, TypeScript, Node.js, Supabase, Tailwind CSS
+- Projets : Portfolio moderne avec animations, E-commerce complet, Dashboard Analytics
+- Localisation : France
 - Email : info@sebbe-mercier.tech
 - Disponible pour nouveaux projets
 
-Réponds de manière professionnelle et concise. Reste dans le contexte de son portfolio.
+Réponds de manière professionnelle, concise et naturelle. Reste dans le contexte de son portfolio.
 Si on te demande des informations que tu n'as pas, redirige vers ses projets ou son contact.
+Utilise des emojis avec parcimonie pour rendre tes réponses plus engageantes.
 
 Message utilisateur : ${message}`;
 
-    // Appel à Ollama
+    // Appel à Ollama avec Phi-4-mini
     const response = await fetch('http://localhost:11434/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'phi3:mini',
+        model: 'phi4-mini-reasoning',
         prompt: systemPrompt,
         stream: false,
         options: {
           temperature: 0.7,
           top_p: 0.9,
-          max_tokens: 256
+          max_tokens: 200, // Optimisé pour Render
+          num_ctx: 2048    // Contexte suffisant
         }
       })
     });
@@ -77,7 +79,7 @@ Message utilisateur : ${message}`;
     
     res.json({
       response: data.response,
-      model: 'phi3:mini',
+      model: 'phi4-mini-reasoning',
       timestamp: new Date().toISOString()
     });
 
@@ -94,7 +96,7 @@ Message utilisateur : ${message}`;
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
-    model: 'phi3:mini',
+    model: 'phi4-mini-reasoning',
     timestamp: new Date().toISOString()
   });
 });
