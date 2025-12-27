@@ -1,13 +1,13 @@
 // Composant pour télécharger le CV dynamique
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Download, FileText, Eye, Database, Sparkles } from 'lucide-react';
-import { useAnalytics } from '../hooks/useAnalytics';
 import { useCVGenerator } from '../hooks/useCVGenerator';
+import { useTranslation } from '../hooks/useTranslation';
 import toast from 'react-hot-toast';
 
 const DownloadCV = ({ variant = 'button', className = '' }) => {
-  const { trackEvent } = useAnalytics();
+  const { t } = useTranslation();
   const { 
     generateAndDownloadCV, 
     previewCV, 
@@ -77,7 +77,7 @@ const DownloadCV = ({ variant = 'button', className = '' }) => {
               <Download className="w-4 h-4" />
             )}
             <span className="font-medium">
-              {isGenerating ? 'Génération...' : 'Télécharger'}
+              {isGenerating ? t('interface.loading', 'Génération...') : t('interface.download', 'Télécharger')}
             </span>
           </motion.button>
           
@@ -146,7 +146,7 @@ const DownloadCV = ({ variant = 'button', className = '' }) => {
         <Download className="w-4 h-4" />
       )}
       <span>
-        {isGenerating ? 'Génération...' : 'CV'}
+        {isGenerating ? t('interface.loading', 'Génération...') : 'CV'}
         {cvData && <span className="text-xs opacity-75 ml-1">DB</span>}
       </span>
     </motion.button>

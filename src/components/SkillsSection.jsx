@@ -1,6 +1,7 @@
 // SkillsSection.jsx - Section des compétences avec barres de progression
 import { useEffect, useRef, useState } from 'react';
 import { animate } from 'animejs';
+import { useTranslation } from '../hooks/useTranslation';
 
 const skills = [
     { name: 'React / Next.js', level: 90, color: 'from-cyan-400 to-blue-500' },
@@ -14,6 +15,7 @@ const skills = [
 export function SkillsSection() {
     const sectionRef = useRef(null);
     const [hasAnimated, setHasAnimated] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const sectionElement = sectionRef.current;
@@ -66,7 +68,7 @@ export function SkillsSection() {
             <div className="max-w-4xl mx-auto">
                 <h2 className="text-3xl lg:text-4xl font-bold text-center mb-12">
                     <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-                        Technical Skills
+                        {t('skills.title', 'Technical Skills')}
                     </span>
                 </h2>
 

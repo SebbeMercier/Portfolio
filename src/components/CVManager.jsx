@@ -1,5 +1,5 @@
 // Composant pour gérer et tester le système de CV dynamique
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Download, Eye, Database, RefreshCw, 
@@ -8,6 +8,9 @@ import {
 } from 'lucide-react';
 import { useCVGenerator } from '../hooks/useCVGenerator';
 import { getCVDownloadStats } from '../services/cvService';
+import { logDatabaseStatus } from '../utils/testDatabase';
+import { useTranslation } from '../hooks/useTranslation';
+import LanguageSelector from './LanguageSelector';
 import toast from 'react-hot-toast';
 
 // shadcn/ui imports
@@ -16,10 +19,12 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Alert, AlertDescription } from './ui/alert';
 import { Separator } from './ui/separator';
+import CVDataManager from './CVDataManager';
 
 const CVManager = () => {
+  const { t } = useTranslation();
   const { 
     generateAndDownloadCV, 
     previewCV, 
@@ -33,12 +38,7 @@ const CVManager = () => {
   const [isSeeding, setIsSeeding] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(null);
 
-  // Charger les données au montage
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       await fetchCVData();
       const downloadStats = await getCVDownloadStats();
@@ -47,7 +47,12 @@ const CVManager = () => {
     } catch (error) {
       console.error('Erreur chargement données:', error);
     }
-  };
+  }, [fetchCVData]);
+
+  // Charger les données au montage
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleSeedData = async () => {
     setIsSeeding(true);
@@ -68,6 +73,25 @@ const CVManager = () => {
       console.error('Erreur seed:', error);
     } finally {
       setIsSeeding(false);
+    }
+  };
+
+  const handleTestDatabase = async () => {
+    toast.loading('Test de la base de données...', { id: 'test-db' });
+    
+    try {
+      const results = await logDatabaseStatus();
+      
+      if (results.connection && results.errors.length === 0) {
+        toast.success('Base de données OK ! Vérifiez la console pour les détails.', { id: 'test-db', duration: 5000 });
+      } else if (results.connection) {
+        toast.error(`Connexion OK mais ${results.errors.length} erreur(s) détectée(s)`, { id: 'test-db', duration: 5000 });
+      } else {
+        toast.error('Échec de connexion à la base de données', { id: 'test-db', duration: 5000 });
+      }
+    } catch (error) {
+      toast.error('Erreur lors du test', { id: 'test-db' });
+      console.error('Erreur test DB:', error);
     }
   };
 
@@ -241,15 +265,23 @@ const CVManager = () => {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-4"
         >
-          <h1 className="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Gestionnaire CV Dynamique
-          </h1>
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex-1" />
+            <div className="flex-1 text-center">
+              <h1 className="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                {t('interface.cvManager', 'Gestionnaire CV Dynamique')}
+              </h1>
+            </div>
+            <div className="flex-1 flex justify-end">
+              <LanguageSelector />
+            </div>
+          </div>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Génération de CV basée sur les données de la base de données avec design moderne
+            {t('interface.cvManagerDesc', 'Génération de CV basée sur les données de la base de données avec design moderne')}
           </p>
           <Badge variant="secondary" className="bg-purple-500/20 text-purple-300 border-purple-500/30">
             <Database className="w-4 h-4 mr-2" />
-            Alimenté par Supabase
+            {t('interface.poweredBySupabase', 'Alimenté par Supabase')}
           </Badge>
         </motion.div>
       </div>
@@ -344,9 +376,12 @@ const CVManager = () => {
 
       {/* Interface avec onglets */}
       <Tabs defaultValue="actions" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-white/5 border border-white/10">
+        <TabsList className="grid w-full grid-cols-4 bg-white/5 border border-white/10">
           <TabsTrigger value="actions" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300">
             Actions CV
+          </TabsTrigger>
+          <TabsTrigger value="data" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300">
+            Données CV
           </TabsTrigger>
           <TabsTrigger value="database" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300">
             Base de Données
@@ -444,6 +479,16 @@ const CVManager = () => {
                     Peupler les données
                   </Button>
 
+                  <Button
+                    onClick={handleTestDatabase}
+                    variant="outline"
+                    className="w-full border-blue-500/30 text-blue-300 hover:bg-blue-500/10"
+                    size="lg"
+                  >
+                    <Database className="w-4 h-4 mr-2" />
+                    Tester la connexion DB
+                  </Button>
+
                   <Alert className="bg-green-500/10 border-green-500/20">
                     <AlertCircle className="h-4 w-4 text-green-400" />
                     <AlertDescription className="text-green-300">
@@ -454,6 +499,10 @@ const CVManager = () => {
               </Card>
             </motion.div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="data" className="mt-6">
+          <CVDataManager />
         </TabsContent>
 
         <TabsContent value="database" className="mt-6">

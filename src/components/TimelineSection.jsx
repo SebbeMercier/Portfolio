@@ -2,31 +2,33 @@
 import { useEffect, useRef, useState } from 'react';
 import { GraduationCap, Briefcase, Code } from 'lucide-react';
 import { animate } from 'animejs';
+import { useTranslation } from '../hooks/useTranslation';
 
 export function TimelineSection() {
     const sectionRef = useRef(null);
     const [hasAnimated, setHasAnimated] = useState(false);
+    const { t } = useTranslation();
 
     const timeline = [
         {
             year: '2023',
             icon: GraduationCap,
-            title: 'Started Full-Stack Development',
-            description: 'Began my journey in web development at Isa Gosselies',
+            title: t('timeline.item1.title', 'Started Full-Stack Development'),
+            description: t('timeline.item1.description', 'Began my journey in web development at Isa Gosselies'),
             color: 'from-purple-400 to-pink-500'
         },
         {
             year: '2024',
             icon: Code,
-            title: 'First Professional Projects',
-            description: 'Developed Eldocam.com and Cedra-shop.eu with modern tech stack',
+            title: t('timeline.item2.title', 'First Professional Projects'),
+            description: t('timeline.item2.description', 'Developed Eldocam.com and Cedra-shop.eu with modern tech stack'),
             color: 'from-blue-400 to-cyan-500'
         },
         {
             year: '2025',
             icon: Briefcase,
-            title: 'Expanding Skills',
-            description: 'Learning mobile development with Swift and Kotlin',
+            title: t('timeline.item3.title', 'Expanding Skills'),
+            description: t('timeline.item3.description', 'Learning mobile development with Swift and Kotlin'),
             color: 'from-green-400 to-emerald-500'
         }
     ];
@@ -68,7 +70,7 @@ export function TimelineSection() {
             <div className="max-w-4xl mx-auto">
                 <h2 className="text-3xl lg:text-4xl font-bold text-center mb-16">
                     <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-                        My Journey
+                        {t('timeline.title', 'My Journey')}
                     </span>
                 </h2>
 

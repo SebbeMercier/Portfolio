@@ -1,9 +1,11 @@
 // src/components/About.jsx
 import React, { useRef, useEffect, useState } from 'react';
 import { useSectionGradient } from '../hooks/useSectionGradient';
+import { useTranslation } from '../hooks/useTranslation';
 
-const About = () => {
+export const AboutSection = () => {
     const sectionRef = useSectionGradient('#0a1a2e');
+    const { t } = useTranslation();
     const containerRef = useRef(null);
     const mobileRef = useRef(null); // Nouveau ref pour la section mobile
     const [dimensions, setDimensions] = useState({ width: 0, height: 0, centerX: 0, centerY: 0 });
@@ -156,18 +158,18 @@ const About = () => {
                 {/* Texte de description centré en haut avec animation */}
                 <div className={`text-center mb-8 md:mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-10'}`}>
                     <h2 className="text-2xl md:text-3xl font-bold mb-4 md:hidden bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
-                        About Me
+                        {t('about.title', 'About Me')}
                     </h2>
                     <p className="text-sm md:text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed px-4">
-                        A full-stack development student driven by{' '}
-                        <span className="text-purple-400 font-medium hover:text-purple-300 transition-colors duration-300 cursor-default">curiosity</span> and{' '}
-                        <span className="text-purple-400 font-medium hover:text-purple-300 transition-colors duration-300 cursor-default">creativity</span>.
+                        {t('about.description.part1', 'A full-stack development student driven by')}{' '}
+                        <span className="text-purple-400 font-medium hover:text-purple-300 transition-colors duration-300 cursor-default">{t('about.curiosity', 'curiosity')}</span> {t('about.and', 'and')}{' '}
+                        <span className="text-purple-400 font-medium hover:text-purple-300 transition-colors duration-300 cursor-default">{t('about.creativity', 'creativity')}</span>.
                         <span className="hidden md:inline"><br /></span>
                         <span className="inline md:hidden"> </span>
-                        I love turning ideas into functional, accessible, and elegant web experiences — and I'm eager to grow within
+                        {t('about.description.part2', 'I love turning ideas into functional, accessible, and elegant web experiences — and I\'m eager to grow within')}
                         <span className="hidden md:inline"><br /></span>
                         <span className="inline md:hidden"> </span>
-                        a collaborative team.
+                        {t('about.description.part3', 'a collaborative team.')}.
                     </p>
                 </div>
 
@@ -512,4 +514,4 @@ const About = () => {
     );
 };
 
-export default About;
+export default AboutSection;

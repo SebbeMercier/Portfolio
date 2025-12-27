@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { TypewriterText } from "./TypewriterText";
+import { useTranslation } from "../hooks/useTranslation";
 
 export function HeroText() {
     const [showImagine, setShowImagine] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -44,7 +46,7 @@ export function HeroText() {
         >
             <motion.div className="space-y-2 relative" variants={itemVariants}>
                 <p className="text-sm sm:text-base text-gray-300 relative z-10">
-                    Hello, I'm{" "}
+                    {t('hero.greeting', 'Hello, I\'m')}{" "}
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 font-semibold inline-block">
                         Sebbe Mercier
                     </span>
@@ -54,10 +56,10 @@ export function HeroText() {
                 <p className="text-gray-500 text-[9px] sm:text-[10px] uppercase tracking-[0.35em] font-light">
                     <TypewriterText
                         texts={[
-                            "A fullstack developer",
-                            "A creative coder",
-                            "A problem solver",
-                            "A tech enthusiast"
+                            t('hero.role1', 'A fullstack developer'),
+                            t('hero.role2', 'A creative coder'),
+                            t('hero.role3', 'A problem solver'),
+                            t('hero.role4', 'A tech enthusiast')
                         ]}
                         typingSpeed={80}
                         deletingSpeed={40}
@@ -78,10 +80,10 @@ export function HeroText() {
                         animate={{ y: 0 }}
                         transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
                     >
-                        Front to back
+                        {t('hero.frontToBack', 'Front to back')}
                     </motion.span>
                 </span>
-                <span className="block text-white overflow-visible">I build what others{" "}
+                <span className="block text-white overflow-visible">{t('hero.buildWhat', 'I build what others')}{" "}
                     {showImagine && (
                         <motion.span
                             className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600 pb-1"
@@ -102,7 +104,7 @@ export function HeroText() {
                                 textShadow: "0 0 20px rgba(168, 85, 247, 0.5)"
                             }}
                         >
-                            imagine.
+                            {t('hero.imagine', 'imagine.')}
                         </motion.span>
                     )}
 

@@ -1,6 +1,7 @@
 // testimonialsService.js - Service pour gérer les témoignages avec Supabase
 import { supabase } from '../config/supabase';
 import { testimonialsData as defaultTestimonials } from '../data/testimonialsData';
+import { translateTextWithCache } from './translationService';
 
 const TESTIMONIALS_TABLE = 'testimonials';
 
@@ -30,7 +31,7 @@ export const getTestimonials = async () => {
 };
 
 // Récupérer seulement les témoignages approuvés et visibles (pour le frontend)
-export const getVisibleTestimonials = async () => {
+export const getVisibleTestimonials = async (language = 'en') => {
     try {
         const { data, error } = await supabase
             .from(TESTIMONIALS_TABLE)
@@ -41,14 +42,47 @@ export const getVisibleTestimonials = async () => {
 
         if (error) {
             console.error('Error fetching visible testimonials:', error);
-            return defaultTestimonials.filter(t => t.isVisible);
+            return await translateTestimonials(defaultTestimonials.filter(t => t.isVisible), language);
         }
 
-        return data || [];
+        return await translateTestimonials(data || [], language);
     } catch (error) {
         console.error('Error fetching visible testimonials:', error);
-        return defaultTestimonials.filter(t => t.isVisible);
+        return await translateTestimonials(defaultTestimonials.filter(t => t.isVisible), language);
     }
+};
+
+// Traduire les témoignages selon la langue
+const translateTestimonials = async (testimonials, language) => {
+    if (language === 'en') {
+        return testimonials; // Pas de traduction nécessaire pour l'anglais
+    }
+    
+    const translatedTestimonials = await Promise.all(
+        testimonials.map(async (testimonial) => {
+            let translatedContent = testimonial.content;
+            
+            // Option 1: Vérifier si la traduction existe déjà dans les colonnes multilingues
+            if (testimonial[`content_${language}`]) {
+                translatedContent = testimonial[`content_${language}`];
+            } else {
+                // Option 2: Utiliser le service de traduction automatique avec cache
+                translatedContent = await translateTextWithCache(
+                    testimonial.content, 
+                    language, 
+                    'testimonial', 
+                    testimonial.id
+                );
+            }
+            
+            return {
+                ...testimonial,
+                content: translatedContent
+            };
+        })
+    );
+    
+    return translatedTestimonials;
 };
 
 // Sauvegarder un témoignage (créer ou mettre à jour)

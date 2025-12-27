@@ -5,12 +5,14 @@ import { Curve } from "./Curve";
 import { HeroArrow } from "./HeroArrow";
 import { MagneticCTA } from "./MagneticCTA";
 import { useSectionGradient } from "../hooks/useSectionGradient";
+import { useTranslation } from "../hooks/useTranslation";
 // Removed unused motion import
 import FadeIn from "./animations/FadeIn";
 import ScaleIn from "./animations/ScaleIn";
 
 export function Hero() {
     const sectionRef = useSectionGradient('#0a0a1a');
+    const { t } = useTranslation();
 
     return (
         <section ref={sectionRef} className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-12 py-20 bg-gradient-to-b from-[#0f0a1f] via-[#1a0b2e] to-[#0a0a1a] overflow-hidden">
@@ -54,10 +56,10 @@ export function Hero() {
                                     <div className="relative space-y-4 text-center lg:text-left">
                                         <div className="space-y-2">
                                             <h2 className="text-2xl font-bold text-white group-hover:text-purple-100 transition-colors duration-300">
-                                                I'm a Student.
+                                                {t('pages.home.title', 'I\'m a Student.')}
                                             </h2>
                                             <p className="text-gray-400 text-sm group-hover:text-gray-300 transition-colors duration-300">
-                                                I study at{" "}
+                                                {t('pages.home.subtitle', 'I study at')}{" "}
                                                 <a
                                                     href="https://isagosselies.com"
                                                     className="text-purple-400 hover:text-purple-300 transition-colors duration-300 underline decoration-purple-400/30 hover:decoration-purple-300 relative inline-block group/link"
@@ -73,15 +75,13 @@ export function Hero() {
                                         <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
 
                                         <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
-                                            A self-taught full-stack developer, crafting clean and efficient solutions
-                                            for the web. I build reliable and scalable digital products that balance
-                                            performance, usability, and innovation.
+                                            {t('pages.home.description', 'A self-taught full-stack developer, crafting clean and efficient solutions for the web. I build reliable and scalable digital products that balance performance, usability, and innovation.')}
                                         </p>
 
                                         {/* Status indicator */}
                                         <div className="flex items-center gap-2 text-xs text-green-400">
                                             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                                            Available for projects
+                                            {t('pages.home.available', 'Available for projects')}
                                         </div>
                                     </div>
                                 </div>
@@ -91,7 +91,7 @@ export function Hero() {
                         {/* CTA Button */}
                         <FadeIn delay={0.6} direction="up">
                             <MagneticCTA href="#contact" className="w-full lg:w-auto justify-center">
-                                Let's work together
+                                {t('pages.home.cta', 'Let\'s work together')}
                             </MagneticCTA>
                         </FadeIn>
                     </div>

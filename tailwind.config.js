@@ -103,5 +103,48 @@ module.exports = {
             },
         },
     },
-    plugins: [require("tailwindcss-animate")],
+    plugins: [
+        require("tailwindcss-animate"),
+        require("daisyui")
+    ],
+    
+    // Configuration DaisyUI
+    daisyui: {
+        themes: [
+            {
+                dark: {
+                    "primary": "#8b5cf6",
+                    "secondary": "#ec4899", 
+                    "accent": "#06b6d4",
+                    "neutral": "#1f2937",
+                    "base-100": "#0f0f23",
+                    "base-200": "#1a1a2e",
+                    "base-300": "#16213e",
+                    "info": "#3abff8",
+                    "success": "#36d399",
+                    "warning": "#fbbd23",
+                    "error": "#f87272",
+                },
+                light: {
+                    "primary": "#8b5cf6",
+                    "secondary": "#ec4899",
+                    "accent": "#06b6d4", 
+                    "neutral": "#f3f4f6",
+                    "base-100": "#ffffff",
+                    "base-200": "#f9fafb",
+                    "base-300": "#f3f4f6",
+                    "info": "#3abff8",
+                    "success": "#36d399", 
+                    "warning": "#fbbd23",
+                    "error": "#f87272",
+                }
+            }
+        ],
+        darkTheme: "dark",
+        base: true,
+        styled: true,
+        utils: true,
+        prefix: "", // Suppression du préfixe pour utiliser les classes DaisyUI normalement
+        logs: false,
+    },
 }

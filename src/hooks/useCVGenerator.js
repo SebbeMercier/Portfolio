@@ -4,6 +4,7 @@ import { pdf } from '@react-pdf/renderer';
 import { getCVData, trackCVDownload } from '../services/cvService';
 import CVDocument from '../components/CVGenerator';
 import { useAnalytics } from './useAnalytics';
+import { useTranslation } from './useTranslation';
 import toast from 'react-hot-toast';
 
 export const useCVGenerator = () => {
@@ -11,14 +12,15 @@ export const useCVGenerator = () => {
   const [cvData, setCvData] = useState(null);
   const [error, setError] = useState(null);
   const { visitorId, trackEvent } = useAnalytics();
+  const { currentLanguage } = useTranslation();
 
   // Récupérer les données CV
-  const fetchCVData = useCallback(async () => {
+  const fetchCVData = useCallback(async (language = currentLanguage) => {
     try {
       setError(null);
       console.log('📊 Récupération des données CV...');
       
-      const data = await getCVData();
+      const data = await getCVData(language);
       setCvData(data);
       
       console.log('✅ Données CV chargées');
@@ -28,7 +30,7 @@ export const useCVGenerator = () => {
       setError(err.message);
       throw err;
     }
-  }, []);
+  }, [currentLanguage]);
 
   // Générer et télécharger le PDF
   const generateAndDownloadCV = useCallback(async (source = 'manual') => {
@@ -46,14 +48,20 @@ export const useCVGenerator = () => {
 
       // Récupérer les données si pas déjà fait
       let data = cvData;
-      if (!data) {
-        data = await fetchCVData();
+      if (!data || data.language !== currentLanguage) {
+        data = await fetchCVData(currentLanguage);
       }
 
       console.log('📄 Génération du document PDF...');
       
       // Générer le PDF avec React-PDF
-      const blob = await pdf(<CVDocument cvData={data} />).toBlob();
+      const blob = await pdf(
+        <CVDocument 
+          cvData={data} 
+          language={data.language} 
+          translations={data.translations} 
+        />
+      ).toBlob();
       
       console.log('💾 Téléchargement du fichier...');
       
@@ -114,7 +122,7 @@ export const useCVGenerator = () => {
     } finally {
       setIsGenerating(false);
     }
-  }, [cvData, isGenerating, visitorId, trackEvent, fetchCVData]);
+  }, [cvData, isGenerating, visitorId, trackEvent, fetchCVData, currentLanguage]);
 
   // Prévisualiser le CV (ouvrir dans un nouvel onglet)
   const previewCV = useCallback(async () => {
@@ -123,11 +131,17 @@ export const useCVGenerator = () => {
       toast.loading('Génération de l\'aperçu...', { id: 'cv-preview' });
 
       let data = cvData;
-      if (!data) {
-        data = await fetchCVData();
+      if (!data || data.language !== currentLanguage) {
+        data = await fetchCVData(currentLanguage);
       }
 
-      const blob = await pdf(<CVDocument cvData={data} />).toBlob();
+      const blob = await pdf(
+        <CVDocument 
+          cvData={data} 
+          language={data.language} 
+          translations={data.translations} 
+        />
+      ).toBlob();
       const url = URL.createObjectURL(blob);
       
       // Ouvrir dans un nouvel onglet
@@ -146,7 +160,7 @@ export const useCVGenerator = () => {
       // Fallback
       window.open('/cv-sebbe-mercier.pdf', '_blank');
     }
-  }, [cvData, trackEvent, fetchCVData]);
+  }, [cvData, trackEvent, fetchCVData, currentLanguage]);
 
   // Obtenir les données CV sans télécharger
   const getCVDataOnly = useCallback(async () => {

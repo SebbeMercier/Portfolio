@@ -1,17 +1,19 @@
 // Admin.jsx - Panel d'administration pour gérer les projets et témoignages avec Supabase
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, Save, X, Eye, LogOut, Upload, RefreshCw, Star, MessageSquare, EyeOff } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, Eye, LogOut, Upload, RefreshCw, Star, MessageSquare, EyeOff, FileText } from 'lucide-react';
 import { supabase, isEmailAllowed } from '../config/supabase';
 import { getProjects, saveProject, deleteProject, initializeSupabase, uploadImage } from '../services/supabaseProjectService';
 import { getTestimonials, saveTestimonial, deleteTestimonial, toggleTestimonialVisibility, initializeTestimonials } from '../services/testimonialsService';
 import { getPendingFeedback, approveFeedback, rejectFeedback, cleanupRejectedFeedback } from '../services/feedbackService';
 import { validateImageFile } from '../services/imageUploadService';
 import { StatsWidget } from '../components/StatsWidget';
+import CVManager from '../components/CVManager';
+import CVDataManager from '../components/CVDataManager';
 
 const Admin = () => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('projects'); // 'projects', 'testimonials', ou 'feedback'
+    const [activeTab, setActiveTab] = useState('projects'); // 'projects', 'testimonials', 'feedback', 'cv', ou 'cvdata'
     
     // Projects state
     const [projects, setProjects] = useState([]);
@@ -153,11 +155,17 @@ const Admin = () => {
             image: '',
             links: {},
             features: [],
-            detailedTech: {},
             year: new Date().getFullYear().toString(),
             status: 'In Development',
             duration: '',
-            role: ''
+            role: '',
+            client: '',
+            category: '',
+            challenges: '',
+            results: '',
+            team: '',
+            budget: '',
+            metrics: {}
         };
         setCurrentProject(newProject);
         setImagePreview(null);
@@ -238,7 +246,7 @@ const Admin = () => {
     };
 
     const removeTag = (tag) => {
-        updateField('tags', currentProject.tags.filter(t => t !== tag));
+        updateField('tags', (currentProject.tags || []).filter(t => t !== tag));
     };
 
     // Ajouter/supprimer des features
@@ -616,6 +624,29 @@ const Admin = () => {
                             <Star className="w-4 h-4" />
                             Pending Feedback ({pendingFeedback.length})
                         </button>
+                        <button
+                            onClick={() => setActiveTab('cv')}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+                                activeTab === 'cv'
+                                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                                    : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                            }`}
+                        >
+                            <FileText className="w-4 h-4" />
+                            CV Manager
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('cvdata')}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+                                activeTab === 'cvdata'
+                                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                                    : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                            }`}
+                        >
+                            <FileText className="w-4 h-4" />
+                            CV Data
+                        </button>
+
                     </div>
                 )}
 
@@ -640,7 +671,7 @@ const Admin = () => {
                                             <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
                                             <p className="text-gray-400 text-sm mb-3 line-clamp-2">{project.description}</p>
                                             <div className="flex flex-wrap gap-2 mb-3">
-                                                {project.tags.slice(0, 5).map((tag, idx) => (
+                                                {(project.tags || []).slice(0, 5).map((tag, idx) => (
                                                     <span key={idx} className="px-2 py-1 bg-purple-900/30 text-purple-300 text-xs rounded-full">
                                                         {tag}
                                                     </span>
@@ -884,6 +915,40 @@ const Admin = () => {
                                 ))}
                             </div>
                         )}
+                    </>
+                ) : activeTab === 'cv' && !isEditing && !isEditingTestimonial ? (
+                    <>
+                        {/* CV Manager Tab */}
+                        <div className="mb-8">
+                            <h2 className="text-2xl font-bold text-white mb-4">
+                                CV <span className="text-purple-400">Manager</span>
+                            </h2>
+                            <p className="text-gray-400 text-sm mb-6">
+                                Gérez et générez votre CV dynamique basé sur les données de la base de données.
+                            </p>
+                        </div>
+                        
+                        {/* Intégrer CVManager */}
+                        <div className="bg-gray-900/30 backdrop-blur-sm border border-white/5 rounded-2xl p-6">
+                            <CVManager />
+                        </div>
+                    </>
+                ) : activeTab === 'cvdata' && !isEditing && !isEditingTestimonial ? (
+                    <>
+                        {/* CV Data Tab */}
+                        <div className="mb-8">
+                            <h2 className="text-2xl font-bold text-white mb-4">
+                                CV <span className="text-purple-400">Data</span>
+                            </h2>
+                            <p className="text-gray-400 text-sm mb-6">
+                                Gérez vos expériences, compétences, certifications et langues pour le CV dynamique.
+                            </p>
+                        </div>
+                        
+                        {/* Intégrer CVDataManager */}
+                        <div className="bg-gray-900/30 backdrop-blur-sm border border-white/5 rounded-2xl p-6">
+                            <CVDataManager />
+                        </div>
                     </>
                 ) : isEditingTestimonial ? (
                     // Formulaire d'édition témoignage
@@ -1135,7 +1200,7 @@ const Admin = () => {
                                                 <div className="mb-4">
                                                     <h4 className="text-sm font-semibold text-gray-300 mb-2">Key Features:</h4>
                                                     <ul className="space-y-1">
-                                                        {currentProject.features.slice(0, 3).map((feature, idx) => (
+                                                        {(currentProject.features || []).slice(0, 3).map((feature, idx) => (
                                                             <li key={idx} className="text-sm text-gray-400 flex items-start gap-2">
                                                                 <span className="text-purple-400 mt-1">•</span>
                                                                 <span>{feature}</span>
@@ -1354,7 +1419,7 @@ const Admin = () => {
                                     </button>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
-                                    {currentProject.tags.map((tag, idx) => (
+                                    {(currentProject.tags || []).map((tag, idx) => (
                                         <span
                                             key={idx}
                                             className="flex items-center gap-1 px-3 py-1 bg-purple-900/30 text-purple-300 text-sm rounded-full cursor-pointer hover:bg-purple-900/50"
@@ -1396,7 +1461,7 @@ const Admin = () => {
                                     </button>
                                 </div>
                                 <ul className="space-y-2">
-                                    {currentProject.features.map((feature, idx) => (
+                                    {(currentProject.features || []).map((feature, idx) => (
                                         <li
                                             key={idx}
                                             className="flex items-center justify-between px-4 py-2 bg-gray-800 rounded-lg text-white"
@@ -1419,22 +1484,22 @@ const Admin = () => {
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <input
                                         type="text"
-                                        value={currentProject.links.web || ''}
-                                        onChange={(e) => updateField('links', { ...currentProject.links, web: e.target.value })}
+                                        value={(currentProject.links || {}).web || ''}
+                                        onChange={(e) => updateField('links', { ...(currentProject.links || {}), web: e.target.value })}
                                         className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
                                         placeholder="Website URL"
                                     />
                                     <input
                                         type="text"
-                                        value={currentProject.links.githubFront || ''}
-                                        onChange={(e) => updateField('links', { ...currentProject.links, githubFront: e.target.value })}
+                                        value={(currentProject.links || {}).githubFront || ''}
+                                        onChange={(e) => updateField('links', { ...(currentProject.links || {}), githubFront: e.target.value })}
                                         className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
                                         placeholder="GitHub Frontend URL"
                                     />
                                     <input
                                         type="text"
-                                        value={currentProject.links.githubBack || ''}
-                                        onChange={(e) => updateField('links', { ...currentProject.links, githubBack: e.target.value })}
+                                        value={(currentProject.links || {}).githubBack || ''}
+                                        onChange={(e) => updateField('links', { ...(currentProject.links || {}), githubBack: e.target.value })}
                                         className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
                                         placeholder="GitHub Backend URL"
                                     />

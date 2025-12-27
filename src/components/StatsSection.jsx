@@ -3,11 +3,13 @@ import { useEffect, useRef, useState, useMemo } from 'react';
 import { Code2, Rocket, Users, Award, RefreshCw } from 'lucide-react';
 import { animate } from 'animejs';
 import { useStats } from '../hooks/useStats';
+import { useTranslation } from '../hooks/useTranslation';
 
 export function StatsSection() {
     const sectionRef = useRef(null);
     const [hasAnimated, setHasAnimated] = useState(false);
     const { projects, clients, technologies, experience, averageRating, loading, error, refreshStats } = useStats();
+    const { t } = useTranslation();
 
     // Configuration des stats avec données dynamiques
     const stats = useMemo(() => [
@@ -15,35 +17,35 @@ export function StatsSection() {
             icon: Code2, 
             value: projects, 
             suffix: '+', 
-            label: 'Projects Completed', 
+            label: t('stats.projectsCompleted', 'Projects Completed'), 
             color: 'from-purple-400 to-pink-500',
-            description: 'Live & completed projects'
+            description: t('stats.projectsDesc', 'Live & completed projects')
         },
         { 
             icon: Rocket, 
             value: experience, 
             suffix: '+', 
-            label: 'Years Experience', 
+            label: t('stats.yearsExperience', 'Years Experience'), 
             color: 'from-blue-400 to-cyan-500',
-            description: 'Building digital solutions'
+            description: t('stats.experienceDesc', 'Building digital solutions')
         },
         { 
             icon: Users, 
             value: clients, 
             suffix: '+', 
-            label: 'Happy Clients', 
+            label: t('stats.happyClients', 'Happy Clients'), 
             color: 'from-green-400 to-emerald-500',
-            description: averageRating > 0 ? `${averageRating}/5 average rating` : 'Satisfied customers'
+            description: averageRating > 0 ? `${averageRating}/5 ${t('stats.averageRating', 'average rating')}` : t('stats.clientsDesc', 'Satisfied customers')
         },
         { 
             icon: Award, 
             value: technologies, 
             suffix: '+', 
-            label: 'Technologies', 
+            label: t('stats.technologies', 'Technologies'), 
             color: 'from-orange-400 to-red-500',
-            description: 'Frameworks & tools mastered'
+            description: t('stats.technologiesDesc', 'Frameworks & tools mastered')
         }
-    ], [projects, experience, clients, technologies, averageRating]);
+    ], [projects, experience, clients, technologies, averageRating, t]);
 
     useEffect(() => {
         const sectionElement = sectionRef.current;
@@ -109,20 +111,20 @@ export function StatsSection() {
                 <div className="text-center mb-12">
                     <div className="flex items-center justify-center gap-4 mb-4">
                         <h2 className="text-3xl lg:text-4xl font-bold text-white">
-                            By the <span className="text-purple-400">Numbers</span>
+                            {t('stats.title', 'By the')} <span className="text-purple-400">{t('stats.numbers', 'Numbers')}</span>
                         </h2>
                         {!loading && (
                             <button
                                 onClick={refreshStats}
                                 className="p-2 bg-gray-800/50 hover:bg-gray-700/50 border border-white/10 rounded-lg transition-colors"
-                                title="Refresh statistics"
+                                title={t('stats.refreshStats', 'Refresh statistics')}
                             >
                                 <RefreshCw className="w-4 h-4 text-gray-400 hover:text-white" />
                             </button>
                         )}
                     </div>
                     <p className="text-gray-400 max-w-2xl mx-auto">
-                        Real-time statistics from my portfolio, updated automatically based on projects and client feedback.
+                        {t('stats.description', 'Real-time statistics from my portfolio, updated automatically based on projects and client feedback.')}
                     </p>
                 </div>
 
@@ -130,7 +132,7 @@ export function StatsSection() {
                 {loading && (
                     <div className="text-center py-12">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto mb-4"></div>
-                        <p className="text-gray-400">Loading statistics...</p>
+                        <p className="text-gray-400">{t('stats.loading', 'Loading statistics...')}</p>
                     </div>
                 )}
 
@@ -142,7 +144,7 @@ export function StatsSection() {
                             onClick={refreshStats}
                             className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                         >
-                            Try Again
+                            {t('interface.tryAgain', 'Try Again')}
                         </button>
                     </div>
                 )}
@@ -169,7 +171,7 @@ export function StatsSection() {
                                 <div className="absolute top-3 right-3">
                                     <div className="flex items-center gap-1">
                                         <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                        <span className="text-xs text-green-400 font-medium">Live</span>
+                                        <span className="text-xs text-green-400 font-medium">{t('stats.live', 'Live')}</span>
                                     </div>
                                 </div>
 

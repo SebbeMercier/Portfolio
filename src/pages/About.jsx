@@ -1,13 +1,13 @@
 // src/pages/About.jsx
 import React from 'react';
-import AboutComponent from '../components/about';
+import { AboutSection } from '../components/AboutSection';
 import { TestimonialsSection } from '../components/TestimonialsSection';
 import { SkillsSection } from '../components/SkillsSection';
 
 const About = () => {
     return (
         <main>
-            <AboutComponent />
+            <AboutSection />
             <SkillsSection />
             <TestimonialsSection />
         </main>

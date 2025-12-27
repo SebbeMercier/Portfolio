@@ -2,35 +2,53 @@
 import { useEffect, useRef, useState } from 'react';
 import { Globe, Smartphone, Database, Zap } from 'lucide-react';
 import { animate } from 'animejs';
+import { useTranslation } from '../hooks/useTranslation';
 
 export function ServicesSection() {
     const sectionRef = useRef(null);
     const [hasAnimated, setHasAnimated] = useState(false);
+    const { t } = useTranslation();
 
     const services = [
         {
             icon: Globe,
-            title: 'Web Development',
-            description: 'Building responsive and performant web applications with React, Next.js, and modern frameworks.',
-            features: ['SPA & SSR', 'Progressive Web Apps', 'E-commerce Solutions']
+            title: t('services.webDev.title', 'Web Development'),
+            description: t('services.webDev.description', 'Building responsive and performant web applications with React, Next.js, and modern frameworks.'),
+            features: [
+                t('services.webDev.feature1', 'SPA & SSR'), 
+                t('services.webDev.feature2', 'Progressive Web Apps'), 
+                t('services.webDev.feature3', 'E-commerce Solutions')
+            ]
         },
         {
             icon: Smartphone,
-            title: 'Mobile Development',
-            description: 'Creating native mobile experiences for iOS and Android using Swift and Kotlin.',
-            features: ['Native iOS Apps', 'Native Android Apps', 'Cross-platform Solutions']
+            title: t('services.mobileDev.title', 'Mobile Development'),
+            description: t('services.mobileDev.description', 'Creating native mobile experiences for iOS and Android using Swift and Kotlin.'),
+            features: [
+                t('services.mobileDev.feature1', 'Native iOS Apps'), 
+                t('services.mobileDev.feature2', 'Native Android Apps'), 
+                t('services.mobileDev.feature3', 'Cross-platform Solutions')
+            ]
         },
         {
             icon: Database,
-            title: 'Backend Development',
-            description: 'Designing scalable APIs and microservices with Node.js and Golang.',
-            features: ['RESTful APIs', 'GraphQL', 'Microservices Architecture']
+            title: t('services.backendDev.title', 'Backend Development'),
+            description: t('services.backendDev.description', 'Designing scalable APIs and microservices with Node.js and Golang.'),
+            features: [
+                t('services.backendDev.feature1', 'RESTful APIs'), 
+                t('services.backendDev.feature2', 'GraphQL'), 
+                t('services.backendDev.feature3', 'Microservices Architecture')
+            ]
         },
         {
             icon: Zap,
-            title: 'Performance Optimization',
-            description: 'Optimizing applications for speed, scalability, and user experience.',
-            features: ['Caching Strategies', 'Database Optimization', 'CDN Integration']
+            title: t('services.performance.title', 'Performance Optimization'),
+            description: t('services.performance.description', 'Optimizing applications for speed, scalability, and user experience.'),
+            features: [
+                t('services.performance.feature1', 'Caching Strategies'), 
+                t('services.performance.feature2', 'Database Optimization'), 
+                t('services.performance.feature3', 'CDN Integration')
+            ]
         }
     ];
 
@@ -72,11 +90,11 @@ export function ServicesSection() {
             <div className="max-w-7xl mx-auto">
                 <h2 className="text-3xl lg:text-4xl font-bold text-center mb-4">
                     <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-                        What I Do
+                        {t('services.title', 'What I Do')}
                     </span>
                 </h2>
                 <p className="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
-                    Specialized in building modern, scalable, and user-friendly digital solutions
+                    {t('services.subtitle', 'Specialized in building modern, scalable, and user-friendly digital solutions')}
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6">

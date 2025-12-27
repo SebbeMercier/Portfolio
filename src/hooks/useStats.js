@@ -31,14 +31,7 @@ export const useStats = () => {
                 project.tags.forEach(tag => techSet.add(tag.toLowerCase()));
             }
             
-            // Extraire des technologies détaillées si disponible
-            if (project.detailedTech) {
-                Object.values(project.detailedTech).forEach(techArray => {
-                    if (Array.isArray(techArray)) {
-                        techArray.forEach(tech => techSet.add(tech.toLowerCase()));
-                    }
-                });
-            }
+
         });
         
         return techSet.size;

@@ -1,7 +1,7 @@
-// ProjectDetail.jsx - Page de détail d'un projet
+// ProjectDetail.jsx - Page de détail d'un projet avec informations complètes
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
-import { ArrowLeft, ExternalLink, Github, Server, Calendar, Tag, CheckCircle } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Github, Server, Calendar, Tag, CheckCircle, Clock, Building, Eye } from 'lucide-react';
 import { animate } from 'animejs';
 import { useSectionGradient } from '../hooks/useSectionGradient';
 import { useProjects } from '../hooks/useProjects';
@@ -11,9 +11,19 @@ const ProjectDetail = () => {
     const navigate = useNavigate();
     const sectionRef = useSectionGradient('#0a0f1f');
     const contentRef = useRef(null);
-    const { projects: projectsData, loading } = useProjects(); // Utiliser le hook
+    const { projects: projectsData, loading } = useProjects();
 
-    const project = projectsData.find(p => p.id === parseInt(id));
+    // Recherche robuste du projet
+    const project = projectsData.find(p => String(p.id) === String(id));
+
+    // Trouver les projets du même client/type
+    const relatedProjects = project ? projectsData.filter(p => 
+        p.id !== project.id && (
+            p.client === project.client || 
+            p.category === project.category ||
+            (p.tags && project.tags && p.tags.some(tag => project.tags.includes(tag)))
+        )
+    ).slice(0, 3) : [];
 
     useEffect(() => {
         if (contentRef.current) {
@@ -25,7 +35,7 @@ const ProjectDetail = () => {
                 easing: 'out-expo'
             });
         }
-    }, []);
+    }, [project]);
 
     if (loading) {
         return (
@@ -43,6 +53,10 @@ const ProjectDetail = () => {
             <div className="min-h-screen pt-40 pb-20 px-4 flex items-center justify-center bg-gradient-to-b from-[#0a1a2e] via-[#1a2a3e] to-[#0a0f1f]">
                 <div className="text-center">
                     <h1 className="text-4xl font-bold text-white mb-4">Project Not Found</h1>
+                    <p className="text-gray-400 mb-2">Searched for ID: {id}</p>
+                    <p className="text-gray-400 mb-6">
+                        {projectsData.length > 0 ? `Available projects: ${projectsData.map(p => p.id).join(', ')}` : 'No projects available.'}
+                    </p>
                     <button
                         onClick={() => navigate('/projects')}
                         className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:scale-105 transition-transform"
@@ -57,12 +71,13 @@ const ProjectDetail = () => {
     const statusColors = {
         'Live': 'bg-green-500/20 text-green-400 border-green-500/30',
         'In Development': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-        'Completed': 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+        'Completed': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+        'Maintenance': 'bg-orange-500/20 text-orange-400 border-orange-500/30'
     };
 
     return (
         <section ref={sectionRef} className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#0a1a2e] via-[#1a2a3e] to-[#0a0f1f]">
-            <div className="max-w-5xl mx-auto" ref={contentRef}>
+            <div className="max-w-6xl mx-auto" ref={contentRef}>
                 {/* Back button */}
                 <button
                     onClick={() => navigate('/projects')}
@@ -72,27 +87,49 @@ const ProjectDetail = () => {
                     Back to Projects
                 </button>
 
-                {/* Header */}
+                {/* Header avec informations client */}
                 <div className="animate-item opacity-0 mb-8">
-                    <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
-                        <div>
+                    <div className="flex flex-wrap items-start justify-between gap-6 mb-6">
+                        <div className="flex-1 min-w-0">
+                            {project.client && (
+                                <div className="flex items-center gap-2 text-purple-400 mb-2">
+                                    <Building className="w-4 h-4" />
+                                    <span className="text-sm font-medium">{project.client}</span>
+                                </div>
+                            )}
                             <h1 className="text-4xl lg:text-5xl font-bold text-white mb-3">
                                 {project.title}
                             </h1>
+                            <p className="text-xl text-gray-300 mb-4 leading-relaxed">
+                                {project.description}
+                            </p>
+                            
                             <div className="flex flex-wrap gap-3 items-center">
-                                <span className={`text-sm px-3 py-1 rounded-full border ${statusColors[project.status]}`}>
+                                <span className={`text-sm px-3 py-1 rounded-full border ${statusColors[project.status] || statusColors['Completed']}`}>
                                     {project.status}
                                 </span>
                                 <div className="flex items-center gap-2 text-gray-400">
                                     <Calendar className="w-4 h-4" />
                                     <span className="text-sm">{project.year}</span>
                                 </div>
+                                {project.duration && (
+                                    <div className="flex items-center gap-2 text-gray-400">
+                                        <Clock className="w-4 h-4" />
+                                        <span className="text-sm">{project.duration}</span>
+                                    </div>
+                                )}
+                                {project.views && (
+                                    <div className="flex items-center gap-2 text-gray-400">
+                                        <Eye className="w-4 h-4" />
+                                        <span className="text-sm">{project.views} views</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
                         {/* Links */}
-                        <div className="flex gap-3">
-                            {project.links.web && (
+                        <div className="flex flex-wrap gap-3">
+                            {project.links?.web && (
                                 <a
                                     href={project.links.web}
                                     target="_blank"
@@ -103,7 +140,7 @@ const ProjectDetail = () => {
                                     <span className="text-sm font-medium">Visit Site</span>
                                 </a>
                             )}
-                            {project.links.githubFront && (
+                            {project.links?.githubFront && (
                                 <a
                                     href={project.links.githubFront}
                                     target="_blank"
@@ -114,7 +151,7 @@ const ProjectDetail = () => {
                                     <span className="text-sm">Frontend</span>
                                 </a>
                             )}
-                            {project.links.githubBack && (
+                            {project.links?.githubBack && (
                                 <a
                                     href={project.links.githubBack}
                                     target="_blank"
@@ -130,34 +167,26 @@ const ProjectDetail = () => {
                 </div>
 
                 {/* Main image */}
-                <div className="animate-item opacity-0 mb-12">
-                    <div className="relative overflow-hidden rounded-2xl border border-gray-700 shadow-2xl aspect-video">
-                        <img
-                            src={project.image}
-                            alt={project.title}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                                e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600"%3E%3Crect fill="%231a1a2e" width="800" height="600"/%3E%3Ctext fill="%23666" font-family="sans-serif" font-size="32" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3E' + project.title + '%3C/text%3E%3C/svg%3E';
-                            }}
-                        />
+                {project.image && (
+                    <div className="animate-item opacity-0 mb-12">
+                        <div className="relative overflow-hidden rounded-2xl border border-gray-700 shadow-2xl aspect-video">
+                            <img
+                                src={project.image}
+                                alt={project.title}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600"%3E%3Crect fill="%231a1a2e" width="800" height="600"/%3E%3Ctext fill="%23666" font-family="sans-serif" font-size="32" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3E' + project.title + '%3C/text%3E%3C/svg%3E';
+                                }}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Main content */}
                     <div className="lg:col-span-2 space-y-8">
-                        {/* Description */}
-                        <div className="animate-item opacity-0">
-                            <h2 className="text-2xl font-bold text-white mb-4">About This Project</h2>
-                            <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-                                <p className="text-gray-300 leading-relaxed">
-                                    {project.description}
-                                </p>
-                            </div>
-                        </div>
-
                         {/* Key Features */}
-                        {project.features && (
+                        {project.features && project.features.length > 0 && (
                             <div className="animate-item opacity-0">
                                 <h2 className="text-2xl font-bold text-white mb-4">Key Features</h2>
                                 <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
@@ -173,156 +202,70 @@ const ProjectDetail = () => {
                             </div>
                         )}
 
-                        {/* Technologies détaillées */}
-                        {project.detailedTech && (
+                        {/* Challenges & Solutions */}
+                        {project.challenges && (
                             <div className="animate-item opacity-0">
-                                <h2 className="text-2xl font-bold text-white mb-4">Technical Stack</h2>
+                                <h2 className="text-2xl font-bold text-white mb-4">Challenges & Solutions</h2>
                                 <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-                                    <div className="grid sm:grid-cols-2 gap-4">
-                                        {Object.entries(project.detailedTech).map(([category, techs]) => (
-                                            <div key={category}>
-                                                <h3 className="text-purple-400 font-semibold mb-2 text-sm uppercase tracking-wide">
-                                                    {category}
-                                                </h3>
-                                                <ul className="space-y-1">
-                                                    {techs.map((tech, idx) => (
-                                                        <li key={idx} className="text-gray-300 text-sm">
-                                                            • {tech}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        ))}
-                                    </div>
+                                    <p className="text-gray-300 leading-relaxed">
+                                        {project.challenges}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Results & Impact */}
+                        {project.results && (
+                            <div className="animate-item opacity-0">
+                                <h2 className="text-2xl font-bold text-white mb-4">Results & Impact</h2>
+                                <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                                    <p className="text-gray-300 leading-relaxed">
+                                        {project.results}
+                                    </p>
                                 </div>
                             </div>
                         )}
 
                         {/* Related Projects */}
-                        {project.relatedProjects && project.relatedProjects.length > 0 && (
+                        {relatedProjects.length > 0 && (
                             <div className="animate-item opacity-0">
-                                <h2 className="text-2xl font-bold text-white mb-4">Related Projects</h2>
-                                <p className="text-gray-400 mb-6">
-                                    This ecosystem consists of multiple applications sharing the same backend infrastructure
-                                </p>
-                                <div className="grid gap-6">
-                                    {project.relatedProjects.map((related) => (
-                                        <div key={related.id} className="group">
-                                            <div className="relative overflow-hidden">
-                                                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-pink-600/10 
-                                                              rounded-2xl blur-xl opacity-0 group-hover:opacity-100 
-                                                              transition-opacity duration-500"></div>
-
-                                                <div className="relative bg-gray-900/60 backdrop-blur-xl 
-                                                              border border-white/10 rounded-2xl p-6
-                                                              hover:border-purple-500/30 transition-all duration-300">
-                                                    <div className="flex flex-col md:flex-row gap-6">
-                                                        {/* Image */}
-                                                        <div className="md:w-1/3">
-                                                            <div className="relative overflow-hidden rounded-xl border border-gray-700 aspect-video">
-                                                                <img
-                                                                    src={related.image}
-                                                                    alt={related.title}
-                                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                                    onError={(e) => {
-                                                                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%231a1a2e" width="400" height="300"/%3E%3Ctext fill="%23666" font-family="sans-serif" font-size="18" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3E' + related.title + '%3C/text%3E%3C/svg%3E';
-                                                                    }}
-                                                                />
-                                                            </div>
+                                <h2 className="text-2xl font-bold text-white mb-4">
+                                    {project.client ? `Other Projects for ${project.client}` : 'Related Projects'}
+                                </h2>
+                                <div className="grid gap-4">
+                                    {relatedProjects.map((related) => (
+                                        <div 
+                                            key={related.id} 
+                                            className="group cursor-pointer"
+                                            onClick={() => navigate(`/projects/${related.id}`)}
+                                        >
+                                            <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 hover:border-purple-500/30 transition-all duration-300">
+                                                <div className="flex gap-4">
+                                                    {related.image && (
+                                                        <div className="w-20 h-20 rounded-lg overflow-hidden border border-gray-700 flex-shrink-0">
+                                                            <img
+                                                                src={related.image}
+                                                                alt={related.title}
+                                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                            />
                                                         </div>
-
-                                                        {/* Content */}
-                                                        <div className="md:w-2/3 space-y-3">
-                                                            <div className="flex items-start justify-between gap-4">
-                                                                <div>
-                                                                    <h3 className="text-xl font-bold text-white mb-1">
-                                                                        {related.title}
-                                                                    </h3>
-                                                                    <span className="text-sm text-purple-400">
-                                                                        {related.type}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-
-                                                            <p className="text-gray-300 text-sm">
-                                                                {related.description}
-                                                            </p>
-
-                                                            {/* Tech tags */}
-                                                            <div className="flex flex-wrap gap-2">
-                                                                {related.tech.map((tech, idx) => (
-                                                                    <span
-                                                                        key={idx}
-                                                                        className="px-2 py-1 bg-purple-900/20 text-purple-300 text-xs rounded-full border border-purple-500/20"
-                                                                    >
-                                                                        {tech}
-                                                                    </span>
-                                                                ))}
-                                                            </div>
-
-                                                            {/* Links */}
-                                                            <div className="flex flex-wrap gap-2 pt-2">
-                                                                {related.links.web && (
-                                                                    <a
-                                                                        href={related.links.web}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white text-xs rounded-lg hover:bg-gray-700 transition-colors"
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                    >
-                                                                        <ExternalLink className="w-3 h-3" />
-                                                                        Website
-                                                                    </a>
-                                                                )}
-                                                                {related.links.appStore && (
-                                                                    <a
-                                                                        href={related.links.appStore}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white text-xs rounded-lg hover:bg-gray-700 transition-colors"
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                    >
-                                                                        <ExternalLink className="w-3 h-3" />
-                                                                        App Store
-                                                                    </a>
-                                                                )}
-                                                                {related.links.playStore && (
-                                                                    <a
-                                                                        href={related.links.playStore}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white text-xs rounded-lg hover:bg-gray-700 transition-colors"
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                    >
-                                                                        <ExternalLink className="w-3 h-3" />
-                                                                        Play Store
-                                                                    </a>
-                                                                )}
-                                                                {related.links.github && (
-                                                                    <a
-                                                                        href={related.links.github}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white text-xs rounded-lg hover:bg-gray-700 transition-colors"
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                    >
-                                                                        <Github className="w-3 h-3" />
-                                                                        GitHub
-                                                                    </a>
-                                                                )}
-                                                                {related.links.docs && (
-                                                                    <a
-                                                                        href={related.links.docs}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white text-xs rounded-lg hover:bg-gray-700 transition-colors"
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                    >
-                                                                        <ExternalLink className="w-3 h-3" />
-                                                                        API Docs
-                                                                    </a>
-                                                                )}
-                                                            </div>
+                                                    )}
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-purple-400 transition-colors">
+                                                            {related.title}
+                                                        </h3>
+                                                        <p className="text-gray-400 text-sm mb-2 line-clamp-2">
+                                                            {related.description}
+                                                        </p>
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {(related.tags || []).slice(0, 3).map((tag, idx) => (
+                                                                <span
+                                                                    key={idx}
+                                                                    className="px-2 py-1 bg-purple-900/20 text-purple-300 text-xs rounded-full"
+                                                                >
+                                                                    {tag}
+                                                                </span>
+                                                            ))}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -336,31 +279,17 @@ const ProjectDetail = () => {
 
                     {/* Sidebar */}
                     <div className="space-y-6">
-                        {/* Tags */}
-                        <div className="animate-item opacity-0">
-                            <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <Tag className="w-5 h-5 text-purple-400" />
-                                    <h3 className="text-lg font-semibold text-white">Technologies</h3>
-                                </div>
-                                <div className="flex flex-wrap gap-2">
-                                    {project.tags.map((tag, idx) => (
-                                        <span
-                                            key={idx}
-                                            className="px-3 py-1 bg-purple-900/30 text-purple-300 text-sm rounded-full border border-purple-500/20"
-                                        >
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
                         {/* Project Info */}
                         <div className="animate-item opacity-0">
                             <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-                                <h3 className="text-lg font-semibold text-white mb-4">Project Info</h3>
+                                <h3 className="text-lg font-semibold text-white mb-4">Project Details</h3>
                                 <div className="space-y-3 text-sm">
+                                    {project.client && (
+                                        <div>
+                                            <span className="text-gray-400">Client:</span>
+                                            <span className="text-white ml-2">{project.client}</span>
+                                        </div>
+                                    )}
                                     <div>
                                         <span className="text-gray-400">Status:</span>
                                         <span className="text-white ml-2">{project.status}</span>
@@ -381,9 +310,58 @@ const ProjectDetail = () => {
                                             <span className="text-white ml-2">{project.role}</span>
                                         </div>
                                     )}
+                                    {project.team && (
+                                        <div>
+                                            <span className="text-gray-400">Team Size:</span>
+                                            <span className="text-white ml-2">{project.team}</span>
+                                        </div>
+                                    )}
+                                    {project.budget && (
+                                        <div>
+                                            <span className="text-gray-400">Budget:</span>
+                                            <span className="text-white ml-2">{project.budget}</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
+
+                        {/* Technologies */}
+                        <div className="animate-item opacity-0">
+                            <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <Tag className="w-5 h-5 text-purple-400" />
+                                    <h3 className="text-lg font-semibold text-white">Technologies</h3>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {(project.tags || []).map((tag, idx) => (
+                                        <span
+                                            key={idx}
+                                            className="px-3 py-1 bg-purple-900/30 text-purple-300 text-sm rounded-full border border-purple-500/20"
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Performance Metrics */}
+                        {project.metrics && (
+                            <div className="animate-item opacity-0">
+                                <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                                    <h3 className="text-lg font-semibold text-white mb-4">Performance</h3>
+                                    <div className="space-y-3 text-sm">
+                                        {Object.entries(project.metrics).map(([key, value]) => (
+                                            <div key={key}>
+                                                <span className="text-gray-400 capitalize">{key.replace('_', ' ')}:</span>
+                                                <span className="text-white ml-2">{value}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

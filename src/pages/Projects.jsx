@@ -5,15 +5,18 @@ import { animate } from 'animejs';
 import { ExternalLink, Github, Server } from 'lucide-react';
 import { useSectionGradient } from '../hooks/useSectionGradient';
 import { useProjects } from '../hooks/useProjects';
+import { useTranslation } from '../hooks/useTranslation';
 import FadeIn from '../components/animations/FadeIn';
 import StaggerContainer, { StaggerItem } from '../components/animations/StaggerContainer';
 import FloatingCard from '../components/animations/FloatingCard';
 
-const ProjectLinks = ({ links }) => {
+const ProjectLinks = ({ links = {} }) => {
+    const { t } = useTranslation();
+    
     const linkItems = [
-        { type: 'web', icon: <ExternalLink className="w-4 h-4" />, label: "View site", url: links.web },
-        { type: 'githubFront', icon: <Github className="w-4 h-4" />, label: "Frontend", url: links.githubFront },
-        { type: 'githubBack', icon: <Server className="w-4 h-4" />, label: "Backend", url: links.githubBack }
+        { type: 'web', icon: <ExternalLink className="w-4 h-4" />, label: t('projects.viewSite', 'View site'), url: links.web },
+        { type: 'githubFront', icon: <Github className="w-4 h-4" />, label: t('projects.frontend', 'Frontend'), url: links.githubFront },
+        { type: 'githubBack', icon: <Server className="w-4 h-4" />, label: t('projects.backend', 'Backend'), url: links.githubBack }
     ];
 
     return (
@@ -30,7 +33,7 @@ const ProjectLinks = ({ links }) => {
                     >
                         {item.icon}
                         <span className="text-xs text-gray-300 group-hover:text-white">
-                            {item.type === 'web' ? 'Site' : item.type === 'githubFront' ? 'Front' : 'Back'}
+                            {item.type === 'web' ? t('projects.site', 'Site') : item.type === 'githubFront' ? t('projects.front', 'Front') : t('projects.back', 'Back')}
                         </span>
                     </a>
                 )
@@ -145,7 +148,7 @@ const ProjectCard = ({ project, index }) => {
                                         </span>
                                     </div>
                                 </div>
-                                <ProjectLinks links={project.links} />
+                                <ProjectLinks links={project.links || {}} />
                             </div>
 
                             {/* Description */}
@@ -158,7 +161,7 @@ const ProjectCard = ({ project, index }) => {
                                 <div className="space-y-2">
                                     <h4 className="text-sm font-semibold text-purple-400">Key Features:</h4>
                                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                        {project.features.map((feature, idx) => (
+                                        {(project.features || []).map((feature, idx) => (
                                             <li key={idx} className="flex items-center text-sm text-gray-400">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-purple-400 mr-2"></span>
                                                 {feature}
@@ -170,7 +173,7 @@ const ProjectCard = ({ project, index }) => {
 
                             {/* Enhanced Tags */}
                             <div className="flex flex-wrap gap-2 pt-2">
-                                {project.tags.map((tag, idx) => (
+                                {(project.tags || []).map((tag, idx) => (
                                     <span
                                         key={idx}
                                         className="group/tag relative px-3 py-1.5 bg-purple-900/30 text-purple-300 text-xs rounded-full 
@@ -199,12 +202,13 @@ const Projects = () => {
     const sectionRef = useSectionGradient('#0a0f1f');
     const [filter, setFilter] = useState('all');
     const { projects: projectsData, loading } = useProjects(); // Utiliser le hook
+    const { t } = useTranslation();
     
     const categories = ['all', 'Web', 'E-commerce', 'Backend', 'Mobile'];
     
     const filteredProjects = filter === 'all' 
         ? projectsData 
-        : projectsData.filter(p => p.tags.some(tag => tag.toLowerCase().includes(filter.toLowerCase())));
+        : projectsData.filter(p => (p.tags || []).some(tag => tag.toLowerCase().includes(filter.toLowerCase())));
     
     return (
         <section ref={sectionRef} id="projects" className="min-h-screen pt-40 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#0a1a2e] via-[#1a2a3e] to-[#0a0f1f] relative overflow-hidden">
@@ -218,14 +222,14 @@ const Projects = () => {
             <div className="max-w-6xl mx-auto relative z-10">
                 <FadeIn direction="down" duration={0.8}>
                     <h2 className="text-4xl font-bold text-center mb-4 text-white">
-                        My <span className="text-purple-400">Projects</span>
+                        {t('navigation.projects', 'My')} <span className="text-purple-400">{t('projects.title', 'Projects')}</span>
                     </h2>
                     <p className="text-gray-400 text-center mb-2">
-                        Discover my recent work
+                        {t('projects.subtitle', 'Discover my recent work')}
                     </p>
                     <p className="text-center mb-12">
                         <span className="text-purple-400 font-semibold">{filteredProjects.length}</span>
-                        <span className="text-gray-500"> {filteredProjects.length > 1 ? 'projects' : 'project'}</span>
+                        <span className="text-gray-500"> {filteredProjects.length > 1 ? t('projects.projects', 'projects') : t('projects.project', 'project')}</span>
                     </p>
                 </FadeIn>
 
@@ -274,7 +278,59 @@ const Projects = () => {
                         ))
                     ) : (
                         <div className="text-center py-20">
-                            <p className="text-gray-400 text-lg">No projects found for this category</p>
+                            <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-8 max-w-lg mx-auto">
+                                <div className="mb-6">
+                                    <div className="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-white mb-2">Aucun projet trouvé</h3>
+                                    <p className="text-gray-400">
+                                        {filter === 'all' 
+                                            ? 'Aucun projet n\'est encore configuré dans la base de données.'
+                                            : `Aucun projet trouvé pour la catégorie "${filter}".`
+                                        }
+                                    </p>
+                                </div>
+                                
+                                {filter === 'all' ? (
+                                    <div className="space-y-4">
+                                        <p className="text-purple-400 text-sm font-medium">Pour ajouter des projets :</p>
+                                        <div className="space-y-2 text-sm text-gray-400 text-left">
+                                            <div className="flex items-start gap-3">
+                                                <span className="text-purple-400 font-bold">1.</span>
+                                                <span>Va dans le <strong className="text-white">panel admin</strong> (/admin)</span>
+                                            </div>
+                                            <div className="flex items-start gap-3">
+                                                <span className="text-purple-400 font-bold">2.</span>
+                                                <span>Connecte-toi avec <strong className="text-white">Google</strong></span>
+                                            </div>
+                                            <div className="flex items-start gap-3">
+                                                <span className="text-purple-400 font-bold">3.</span>
+                                                <span>Clique <strong className="text-white">"New Project"</strong> pour créer tes projets</span>
+                                            </div>
+                                        </div>
+                                        <div className="pt-4">
+                                            <button
+                                                onClick={() => window.location.href = '/admin'}
+                                                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:scale-105 transition-transform font-medium"
+                                            >
+                                                Aller au panel admin
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <button
+                                            onClick={() => setFilter('all')}
+                                            className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                                        >
+                                            Voir tous les projets
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
                 </StaggerContainer>

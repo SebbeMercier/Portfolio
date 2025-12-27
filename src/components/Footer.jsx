@@ -2,10 +2,12 @@
 import { useEffect, useRef } from 'react';
 import { createTimeline, stagger } from 'animejs';
 import { useGradient } from '../contexts/GradientContext';
+import { useTranslation } from '../hooks/useTranslation';
 import DownloadCV from './DownloadCV';
 
 const Footer = () => {
     const { lastColor } = useGradient();
+    const { t } = useTranslation();
     const footerRef = useRef(null);
     const columnsRef = useRef(null);
 
@@ -72,41 +74,41 @@ const Footer = () => {
                                 Sebbe Mercier
                             </h3>
                             <p className="text-white/60 group-hover:text-white/80 transition-colors duration-300">
-                                A Full stack developer crafting digital experiences
+                                {t('pages.home.description', 'A Full stack developer crafting digital experiences')}
                             </p>
                             
                             {/* Status indicator */}
                             <div className="flex items-center gap-2 mt-4 text-sm">
                                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                                <span className="text-green-400">Available for projects</span>
+                                <span className="text-green-400">{t('pages.home.available', 'Available for projects')}</span>
                             </div>
                         </div>
                         
                         <div className="opacity-0">
-                            <h3 className="text-white font-bold mb-4 text-lg">Liens rapides</h3>
+                            <h3 className="text-white font-bold mb-4 text-lg">{t('footer.quickLinks', 'Liens rapides')}</h3>
                             <ul className="space-y-3">
                                 <li>
                                     <a href="/" className="group flex items-center text-white/60 hover:text-purple-400 transition-all duration-300">
                                         <span className="w-0 group-hover:w-2 h-px bg-purple-400 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                                        Accueil
+                                        {t('navigation.home', 'Accueil')}
                                     </a>
                                 </li>
                                 <li>
                                     <a href="/about" className="group flex items-center text-white/60 hover:text-purple-400 transition-all duration-300">
                                         <span className="w-0 group-hover:w-2 h-px bg-purple-400 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                                        À propos
+                                        {t('navigation.about', 'À propos')}
                                     </a>
                                 </li>
                                 <li>
                                     <a href="/projects" className="group flex items-center text-white/60 hover:text-purple-400 transition-all duration-300">
                                         <span className="w-0 group-hover:w-2 h-px bg-purple-400 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                                        Projets
+                                        {t('navigation.projects', 'Projets')}
                                     </a>
                                 </li>
                                 <li>
                                     <a href="/feedback" className="group flex items-center text-white/60 hover:text-purple-400 transition-all duration-300">
                                         <span className="w-0 group-hover:w-2 h-px bg-purple-400 mr-0 group-hover:mr-2 transition-all duration-300"></span>
-                                        Laisser un avis
+                                        {t('footer.feedback', 'Laisser un avis')}
                                     </a>
                                 </li>
                             </ul>
@@ -115,7 +117,7 @@ const Footer = () => {
                         <div className="opacity-0 group">
                             <a href="/contact" className="inline-block">
                                 <h3 className="text-white font-bold mb-4 text-lg group-hover:text-purple-300 transition-colors duration-300">
-                                    Contact
+                                    {t('navigation.contact', 'Contact')}
                                 </h3>
                             </a>
                             <div className="space-y-4">
@@ -136,12 +138,12 @@ const Footer = () => {
                                 
                                 {/* Social links */}
                                 <div className="flex gap-3 mt-4">
-                                    <a href="#" className="w-8 h-8 bg-white/5 hover:bg-purple-500/20 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110">
+                                    <button className="w-8 h-8 bg-white/5 hover:bg-purple-500/20 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110">
                                         <span className="text-xs">GH</span>
-                                    </a>
-                                    <a href="#" className="w-8 h-8 bg-white/5 hover:bg-purple-500/20 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110">
+                                    </button>
+                                    <button className="w-8 h-8 bg-white/5 hover:bg-purple-500/20 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110">
                                         <span className="text-xs">LI</span>
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         </div>

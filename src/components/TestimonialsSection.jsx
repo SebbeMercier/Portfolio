@@ -2,13 +2,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTestimonials } from '../hooks/useTestimonials';
+import { useTranslation } from '../hooks/useTranslation';
 import FadeIn from './animations/FadeIn';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function TestimonialsSection() {
     const sectionRef = useRef(null);
     const scrollRef = useRef(null);
-    const { testimonials, loading } = useTestimonials();
+    const { t, currentLanguage } = useTranslation();
+    const { testimonials, loading } = useTestimonials(currentLanguage);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
 
@@ -45,7 +47,7 @@ export function TestimonialsSection() {
             <section className="py-20 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-                    <p className="text-gray-400">Loading testimonials...</p>
+                    <p className="text-gray-400">{t('testimonials.loading')}</p>
                 </div>
             </section>
         );
@@ -61,15 +63,15 @@ export function TestimonialsSection() {
                 <FadeIn direction="up">
                     <h2 className="text-3xl lg:text-4xl font-bold text-center mb-4">
                         <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-                            What Clients Say
+                            {t('testimonials.title')}
                         </span>
                     </h2>
                     <p className="text-gray-400 text-center mb-8">
-                        Feedback from people I've worked with
+                        {t('testimonials.subtitle')}
                     </p>
                     <div className="text-center mb-12">
                         <span className="text-purple-400 font-semibold">{testimonials.length}</span>
-                        <span className="text-gray-500"> {testimonials.length > 1 ? 'testimonials' : 'testimonial'}</span>
+                        <span className="text-gray-500"> {testimonials.length > 1 ? t('testimonials.testimonials') : t('testimonials.testimonial')}</span>
                     </div>
                 </FadeIn>
 
@@ -177,7 +179,7 @@ export function TestimonialsSection() {
                 {/* Indicateur de scroll pour mobile */}
                 {testimonials.length > 3 && (
                     <div className="text-center mt-6 md:hidden">
-                        <p className="text-gray-500 text-sm">← Swipe to see more →</p>
+                        <p className="text-gray-500 text-sm">{t('testimonials.swipeHint')}</p>
                     </div>
                 )}
             </div>

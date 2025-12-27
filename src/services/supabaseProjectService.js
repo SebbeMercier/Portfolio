@@ -1,6 +1,5 @@
 // supabaseProjectService.js - Service pour gérer les projets avec Supabase
 import { supabase } from '../config/supabase';
-import { projectsData as defaultProjects } from '../data/projectsData';
 
 const PROJECTS_TABLE = 'projects';
 const STORAGE_BUCKET = 'project-images';
@@ -15,18 +14,18 @@ export const getProjects = async () => {
 
         if (error) {
             console.error('Error fetching projects:', error);
-            return defaultProjects;
+            return [];
         }
 
         if (!data || data.length === 0) {
-            console.log('No projects in Supabase, using defaults');
-            return defaultProjects;
+            console.log('No projects in Supabase');
+            return [];
         }
 
         return data;
     } catch (error) {
         console.error('Error fetching projects:', error);
-        return defaultProjects;
+        return [];
     }
 };
 
@@ -140,21 +139,10 @@ export const initializeSupabase = async () => {
             return { success: true, message: 'Supabase already has projects' };
         }
 
-        console.log('Initializing Supabase with default projects...');
-
-        const { error } = await supabase
-            .from(PROJECTS_TABLE)
-            .insert(defaultProjects);
-
-        if (error) {
-            console.error('Error initializing Supabase:', error);
-            return { success: false, error: error.message };
-        }
-
-        console.log('Supabase initialized successfully!');
-        return { success: true, message: 'Initialized with default projects' };
+        console.log('No default projects to initialize. Use the admin panel to create projects.');
+        return { success: true, message: 'No default projects configured. Create projects manually in the admin panel.' };
     } catch (error) {
-        console.error('Error initializing Supabase:', error);
+        console.error('Error checking Supabase:', error);
         return { success: false, error: error.message };
     }
 };

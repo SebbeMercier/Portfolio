@@ -6,12 +6,10 @@ import {
   Text, 
   View, 
   StyleSheet, 
-  Font,
-  Link,
-  Image
+  Link
 } from '@react-pdf/renderer';
 
-// Styles pour le PDF - Design Moderne et Professionnel
+// Styles pour le PDF - Design Ultra-Moderne et Attractif
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
@@ -20,185 +18,231 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
   },
   
-  // Header avec gradient visuel
+  // Header moderne avec design asymétrique
   headerSection: {
-    backgroundColor: '#1F2937',
-    padding: 40,
+    backgroundColor: '#0F172A',
+    padding: 0,
     position: 'relative',
+    height: 220,
+  },
+  headerBackground: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: '60%',
+    height: '100%',
+    backgroundColor: '#1E293B',
   },
   headerAccent: {
     position: 'absolute',
     top: 0,
     right: 0,
-    width: 200,
+    width: '40%',
     height: '100%',
     backgroundColor: '#8B5CF6',
-    opacity: 0.1,
+    opacity: 0.9,
   },
   headerContent: {
     position: 'relative',
-    zIndex: 2,
+    zIndex: 3,
+    padding: 40,
+    paddingTop: 50,
   },
   name: {
-    fontSize: 36,
+    fontSize: 42,
     fontWeight: 'bold',
     color: '#ffffff',
-    marginBottom: 8,
-    letterSpacing: 1,
+    marginBottom: 5,
+    letterSpacing: 1.5,
   },
   title: {
-    fontSize: 18,
-    color: '#8B5CF6',
-    marginBottom: 20,
+    fontSize: 16,
+    color: '#A78BFA',
+    marginBottom: 25,
     fontWeight: 'normal',
+    letterSpacing: 0.5,
   },
   contactContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 20,
+    gap: 15,
+    marginTop: 10,
   },
   contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
     marginBottom: 8,
   },
   contactIcon: {
-    width: 12,
-    height: 12,
-    backgroundColor: '#8B5CF6',
-    borderRadius: 6,
+    width: 8,
+    height: 8,
+    backgroundColor: '#F59E0B',
+    borderRadius: 4,
     marginRight: 8,
   },
   contactText: {
-    fontSize: 11,
-    color: '#E5E7EB',
+    fontSize: 10,
+    color: '#E2E8F0',
+    fontWeight: '500',
+  },
+  headerLink: {
+    color: '#FDE047',
+    textDecoration: 'none',
   },
   
-  // Corps du document
+  // Corps du document avec espacement moderne
   bodySection: {
-    padding: 30,
+    padding: 35,
     flex: 1,
+    backgroundColor: '#FAFAFA',
   },
   
-  // Layout en colonnes
+  // Layout en colonnes avec design asymétrique
   twoColumns: {
     flexDirection: 'row',
-    gap: 30,
+    gap: 25,
   },
   leftColumn: {
-    flex: 2.2,
+    flex: 2.3,
+    backgroundColor: '#ffffff',
+    padding: 25,
+    borderRadius: 12,
   },
   rightColumn: {
-    flex: 1.8,
+    flex: 1.7,
     backgroundColor: '#F8FAFC',
     padding: 25,
-    borderRadius: 8,
-    marginLeft: 10,
+    borderRadius: 12,
+    border: '1px solid #E2E8F0',
   },
   
-  // Sections
+  // Sections avec design moderne
   section: {
-    marginBottom: 25,
+    marginBottom: 30,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 18,
+    paddingBottom: 8,
+    borderBottomWidth: 2,
+    borderBottomColor: '#8B5CF6',
   },
   sectionIcon: {
-    width: 20,
-    height: 20,
+    width: 24,
+    height: 24,
     backgroundColor: '#8B5CF6',
-    borderRadius: 10,
-    marginRight: 12,
+    borderRadius: 12,
+    marginRight: 15,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#1F2937',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
   },
   sectionDivider: {
-    height: 2,
-    backgroundColor: '#E5E7EB',
-    marginBottom: 15,
-    borderRadius: 1,
+    height: 1,
+    backgroundColor: 'transparent',
+    marginBottom: 0,
   },
   
-  // Profil/Summary avec style moderne
+  // Profil/Summary avec design attractif
   summaryContainer: {
     backgroundColor: '#F0F9FF',
-    padding: 20,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#8B5CF6',
-    marginBottom: 25,
+    padding: 25,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#BAE6FD',
+    marginBottom: 30,
+    position: 'relative',
+  },
+  summaryAccent: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 5,
+    height: '100%',
+    backgroundColor: '#0EA5E9',
+    borderRadius: '5px 0 0 5px',
   },
   summaryText: {
-    fontSize: 11,
-    color: '#374151',
-    lineHeight: 1.6,
+    fontSize: 12,
+    color: '#0F172A',
+    lineHeight: 1.7,
     textAlign: 'justify',
+    fontStyle: 'italic',
   },
   
-  // Expériences avec timeline visuelle
+  // Expériences avec design moderne et timeline
   experienceItem: {
-    marginBottom: 20,
-    paddingLeft: 20,
-    borderLeftWidth: 2,
-    borderLeftColor: '#E5E7EB',
+    marginBottom: 25,
+    paddingLeft: 25,
+    paddingRight: 15,
+    paddingTop: 15,
+    paddingBottom: 15,
+    borderLeftWidth: 3,
+    borderLeftColor: '#8B5CF6',
     position: 'relative',
+    backgroundColor: '#FEFEFE',
+    borderRadius: '0 10px 10px 0',
   },
   experienceMarker: {
     position: 'absolute',
-    left: -6,
-    top: 5,
-    width: 10,
-    height: 10,
+    left: -8,
+    top: 18,
+    width: 14,
+    height: 14,
     backgroundColor: '#8B5CF6',
-    borderRadius: 5,
+    borderRadius: 7,
+    borderWidth: 3,
+    borderColor: '#ffffff',
   },
   experienceHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   experienceLeft: {
     flex: 1,
   },
   experienceTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#1F2937',
-    marginBottom: 3,
+    marginBottom: 4,
   },
   experienceCompany: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#8B5CF6',
     fontWeight: 'bold',
-    marginBottom: 2,
+    marginBottom: 3,
   },
   experienceLocation: {
-    fontSize: 10,
+    fontSize: 11,
     color: '#6B7280',
     fontStyle: 'italic',
   },
   experienceDate: {
     fontSize: 10,
-    color: '#6B7280',
-    backgroundColor: '#F3F4F6',
-    padding: '4 8',
-    borderRadius: 4,
+    color: '#ffffff',
+    backgroundColor: '#8B5CF6',
+    padding: '6 12',
+    borderRadius: 15,
     textAlign: 'center',
-    minWidth: 80,
+    minWidth: 90,
+    fontWeight: 'bold',
   },
   experienceDescription: {
-    fontSize: 10,
+    fontSize: 11,
     color: '#374151',
-    lineHeight: 1.5,
-    marginBottom: 8,
+    lineHeight: 1.6,
+    marginBottom: 10,
     textAlign: 'justify',
   },
   achievementsList: {
@@ -221,96 +265,128 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   
-  // Compétences avec barres de progression visuelles
+  // Compétences avec design moderne et barres colorées
   skillCategory: {
-    marginBottom: 20,
+    marginBottom: 25,
+    backgroundColor: '#ffffff',
+    padding: 15,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   skillCategoryTitle: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: 'bold',
     color: '#1F2937',
-    marginBottom: 10,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    marginBottom: 12,
+    letterSpacing: 0.8,
+    paddingBottom: 5,
+    borderBottomWidth: 2,
+    borderBottomColor: '#8B5CF6',
   },
   skillItem: {
-    marginBottom: 8,
+    marginBottom: 12,
   },
   skillHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   skillName: {
-    fontSize: 10,
-    color: '#374151',
+    fontSize: 11,
+    color: '#1F2937',
     fontWeight: 'bold',
   },
   skillLevel: {
     fontSize: 9,
-    color: '#6B7280',
+    color: '#ffffff',
+    backgroundColor: '#8B5CF6',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+    fontWeight: 'bold',
   },
   skillBar: {
-    height: 6,
+    height: 8,
     backgroundColor: '#E5E7EB',
-    borderRadius: 3,
+    borderRadius: 4,
     overflow: 'hidden',
   },
   skillProgress: {
     height: '100%',
     backgroundColor: '#8B5CF6',
-    borderRadius: 3,
+    borderRadius: 4,
   },
   
-  // Projets avec cards modernes
+  // Projets avec design attractif et moderne
   projectItem: {
-    backgroundColor: '#FFFFFF',
-    border: '1px solid #E5E7EB',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 12,
+    padding: 18,
+    marginBottom: 18,
     position: 'relative',
   },
   projectAccent: {
     position: 'absolute',
     top: 0,
     left: 0,
-    width: 4,
+    width: 5,
     height: '100%',
     backgroundColor: '#8B5CF6',
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
   },
   projectContent: {
-    paddingLeft: 15,
+    paddingLeft: 20,
+  },
+  projectHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
   },
   projectTitle: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: 'bold',
     color: '#1F2937',
-    marginBottom: 6,
+    marginBottom: 3,
+    flex: 1,
+  },
+  projectStatus: {
+    fontSize: 8,
+    color: '#ffffff',
+    backgroundColor: '#10B981',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
+    fontWeight: 'bold',
   },
   projectDescription: {
-    fontSize: 10,
+    fontSize: 11,
     color: '#374151',
-    lineHeight: 1.4,
-    marginBottom: 8,
+    lineHeight: 1.5,
+    marginBottom: 10,
     textAlign: 'justify',
   },
   projectTechContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 4,
-    marginTop: 8,
+    gap: 6,
+    marginTop: 10,
   },
   projectTech: {
-    fontSize: 8,
+    fontSize: 9,
     color: '#8B5CF6',
-    backgroundColor: '#F0F9FF',
-    padding: '2 6',
-    borderRadius: 3,
-    border: '1px solid #DBEAFE',
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#8B5CF6',
+    fontWeight: '500',
   },
   
   // Langues avec indicateurs visuels
@@ -391,7 +467,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CVDocument = ({ cvData }) => {
+const CVDocument = ({ cvData, language = 'fr', translations }) => {
   const {
     personalInfo,
     experiences,
@@ -402,44 +478,89 @@ const CVDocument = ({ cvData }) => {
     achievements
   } = cvData;
 
+  // Fonction helper pour obtenir les traductions
+  const t = (key, fallback = key) => {
+    if (!translations) return fallback;
+    const keys = key.split('.');
+    let value = translations;
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k];
+      } else {
+        return fallback;
+      }
+    }
+    return typeof value === 'string' ? value : fallback;
+  };
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header Section avec design moderne */}
+        {/* Header Section avec design ultra-moderne */}
         <View style={styles.headerSection}>
+          <View style={styles.headerBackground} />
           <View style={styles.headerAccent} />
           <View style={styles.headerContent}>
             <Text style={styles.name}>{personalInfo.name}</Text>
             <Text style={styles.title}>{personalInfo.title}</Text>
             
             <View style={styles.contactContainer}>
-              <View style={styles.contactItem}>
-                <View style={styles.contactIcon} />
-                <Text style={styles.contactText}>{personalInfo.email}</Text>
-              </View>
-              <View style={styles.contactItem}>
-                <View style={styles.contactIcon} />
-                <Text style={styles.contactText}>{personalInfo.phone}</Text>
-              </View>
-              <View style={styles.contactItem}>
-                <View style={styles.contactIcon} />
-                <Text style={styles.contactText}>{personalInfo.location}</Text>
-              </View>
-              <View style={styles.contactItem}>
-                <View style={styles.contactIcon} />
-                <Link src={personalInfo.website} style={[styles.contactText, styles.link]}>
-                  {personalInfo.website}
-                </Link>
-              </View>
+              {personalInfo.email && (
+                <View style={styles.contactItem}>
+                  <View style={styles.contactIcon} />
+                  <Link src={`mailto:${personalInfo.email}`} style={[styles.contactText, styles.headerLink]}>
+                    {personalInfo.email}
+                  </Link>
+                </View>
+              )}
+              {personalInfo.phone && (
+                <View style={styles.contactItem}>
+                  <View style={styles.contactIcon} />
+                  <Link src={`tel:${personalInfo.phone}`} style={[styles.contactText, styles.headerLink]}>
+                    {personalInfo.phone}
+                  </Link>
+                </View>
+              )}
+              {personalInfo.location && (
+                <View style={styles.contactItem}>
+                  <View style={styles.contactIcon} />
+                  <Text style={styles.contactText}>{personalInfo.location}</Text>
+                </View>
+              )}
+              {personalInfo.website && (
+                <View style={styles.contactItem}>
+                  <View style={styles.contactIcon} />
+                  <Link src={personalInfo.website} style={[styles.contactText, styles.headerLink]}>
+                    {personalInfo.website.replace(/^https?:\/\//, '')}
+                  </Link>
+                </View>
+              )}
+              {personalInfo.linkedin && (
+                <View style={styles.contactItem}>
+                  <View style={styles.contactIcon} />
+                  <Link src={personalInfo.linkedin} style={[styles.contactText, styles.headerLink]}>
+                    LinkedIn
+                  </Link>
+                </View>
+              )}
+              {personalInfo.github && (
+                <View style={styles.contactItem}>
+                  <View style={styles.contactIcon} />
+                  <Link src={personalInfo.github} style={[styles.contactText, styles.headerLink]}>
+                    GitHub
+                  </Link>
+                </View>
+              )}
             </View>
           </View>
         </View>
 
         {/* Corps du document */}
         <View style={styles.bodySection}>
-          {/* Profil/Summary avec style moderne */}
+          {/* Profil/Summary avec design attractif */}
           {personalInfo.summary && (
             <View style={styles.summaryContainer}>
+              <View style={styles.summaryAccent} />
               <Text style={styles.summaryText}>{personalInfo.summary}</Text>
             </View>
           )}
@@ -453,7 +574,7 @@ const CVDocument = ({ cvData }) => {
                 <View style={styles.section}>
                   <View style={styles.sectionHeader}>
                     <View style={styles.sectionIcon} />
-                    <Text style={styles.sectionTitle}>Expérience</Text>
+                    <Text style={styles.sectionTitle}>{t('sections.experience', 'EXPÉRIENCE')}</Text>
                   </View>
                   <View style={styles.sectionDivider} />
                   
@@ -469,11 +590,11 @@ const CVDocument = ({ cvData }) => {
                           )}
                         </View>
                         <Text style={styles.experienceDate}>
-                          {new Date(exp.start_date).toLocaleDateString('fr-FR', { 
+                          {new Date(exp.start_date).toLocaleDateString(language === 'en' ? 'en-US' : language === 'nl' ? 'nl-NL' : 'fr-FR', { 
                             month: 'short', 
                             year: 'numeric' 
-                          })} - {exp.current ? 'Présent' : 
-                            new Date(exp.end_date).toLocaleDateString('fr-FR', { 
+                          })} - {exp.current ? t('labels.present', 'Présent') : 
+                            new Date(exp.end_date).toLocaleDateString(language === 'en' ? 'en-US' : language === 'nl' ? 'nl-NL' : 'fr-FR', { 
                               month: 'short', 
                               year: 'numeric' 
                             })
@@ -503,7 +624,7 @@ const CVDocument = ({ cvData }) => {
                 <View style={styles.section}>
                   <View style={styles.sectionHeader}>
                     <View style={styles.sectionIcon} />
-                    <Text style={styles.sectionTitle}>Projets Clés</Text>
+                    <Text style={styles.sectionTitle}>{t('sections.projects', 'PROJETS CLÉS')}</Text>
                   </View>
                   <View style={styles.sectionDivider} />
                   
@@ -511,11 +632,14 @@ const CVDocument = ({ cvData }) => {
                     <View key={index} style={styles.projectItem}>
                       <View style={styles.projectAccent} />
                       <View style={styles.projectContent}>
-                        <Text style={styles.projectTitle}>{project.title}</Text>
+                        <View style={styles.projectHeader}>
+                          <Text style={styles.projectTitle}>{project.title}</Text>
+                          <Text style={styles.projectStatus}>{project.status || 'Completed'}</Text>
+                        </View>
                         <Text style={styles.projectDescription}>{project.description}</Text>
-                        {project.technologies && (
+                        {(project.tags || project.technologies) && (
                           <View style={styles.projectTechContainer}>
-                            {project.technologies.slice(0, 5).map((tech, i) => (
+                            {(project.tags || project.technologies)?.slice(0, 5).map((tech, i) => (
                               <Text key={i} style={styles.projectTech}>{tech}</Text>
                             ))}
                           </View>
@@ -534,7 +658,7 @@ const CVDocument = ({ cvData }) => {
                 <View style={styles.section}>
                   <View style={styles.sectionHeader}>
                     <View style={styles.sectionIcon} />
-                    <Text style={styles.sectionTitle}>Compétences</Text>
+                    <Text style={styles.sectionTitle}>{t('sections.skills', 'COMPÉTENCES')}</Text>
                   </View>
                   
                   {Object.entries(
@@ -546,14 +670,14 @@ const CVDocument = ({ cvData }) => {
                   ).map(([category, categorySkills]) => (
                     <View key={category} style={styles.skillCategory}>
                       <Text style={styles.skillCategoryTitle}>
-                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                        {t(`skillCategories.${category}`, category.charAt(0).toUpperCase() + category.slice(1))}
                       </Text>
                       {categorySkills.slice(0, 6).map((skill, index) => (
                         <View key={index} style={styles.skillItem}>
                           <View style={styles.skillHeader}>
                             <Text style={styles.skillName}>{skill.name}</Text>
                             <Text style={styles.skillLevel}>
-                              {skill.years_experience ? `${skill.years_experience} ans` : `Niveau ${skill.level}/5`}
+                              {skill.years_experience ? `${skill.years_experience} ${t('labels.years', 'ans')}` : `${t('labels.level', 'Niveau')} ${skill.level}/5`}
                             </Text>
                           </View>
                           <View style={styles.skillBar}>
@@ -573,7 +697,7 @@ const CVDocument = ({ cvData }) => {
                 <View style={styles.section}>
                   <View style={styles.sectionHeader}>
                     <View style={styles.sectionIcon} />
-                    <Text style={styles.sectionTitle}>Formation</Text>
+                    <Text style={styles.sectionTitle}>{t('sections.education', 'FORMATION')}</Text>
                   </View>
                   {education.map((edu, index) => (
                     <View key={index} style={styles.experienceItem}>
@@ -594,12 +718,12 @@ const CVDocument = ({ cvData }) => {
                 <View style={styles.section}>
                   <View style={styles.sectionHeader}>
                     <View style={styles.sectionIcon} />
-                    <Text style={styles.sectionTitle}>Langues</Text>
+                    <Text style={styles.sectionTitle}>{t('sections.languages', 'LANGUES')}</Text>
                   </View>
                   {languages.map((lang, index) => (
                     <View key={index} style={styles.languageItem}>
                       <Text style={styles.languageName}>{lang.name}</Text>
-                      <Text style={styles.languageLevel}>{lang.level}</Text>
+                      <Text style={styles.languageLevel}>{t(`languageLevels.${lang.level}`, lang.level)}</Text>
                     </View>
                   ))}
                 </View>
@@ -610,7 +734,7 @@ const CVDocument = ({ cvData }) => {
                 <View style={styles.section}>
                   <View style={styles.sectionHeader}>
                     <View style={styles.sectionIcon} />
-                    <Text style={styles.sectionTitle}>Réalisations</Text>
+                    <Text style={styles.sectionTitle}>{t('sections.achievements', 'RÉALISATIONS')}</Text>
                   </View>
                   {achievements.map((achievement, index) => (
                     <View key={index} style={styles.achievementItem}>
@@ -626,11 +750,11 @@ const CVDocument = ({ cvData }) => {
           {/* Footer avec informations de génération */}
           <View style={styles.footer}>
             <Text style={styles.footerText}>
-              CV généré automatiquement • {new Date().toLocaleDateString('fr-FR')}
+              {t('interface.cvGenerated', 'CV généré automatiquement')} • {new Date().toLocaleDateString(language === 'en' ? 'en-US' : language === 'nl' ? 'nl-NL' : 'fr-FR')}
             </Text>
             <View style={styles.generatedBadge}>
               <Text style={styles.generatedText}>
-                ⚡ Généré depuis la base de données
+                ⚡ {t('interface.generatedFromDB', 'Généré depuis la base de données')}
               </Text>
             </View>
           </View>

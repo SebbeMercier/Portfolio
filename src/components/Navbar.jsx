@@ -6,17 +6,20 @@ import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Menu, X } from 'lucide-react';
 
 import { useEasterEgg } from '../hooks/useEasterEgg';
+import { useTranslation } from '../hooks/useTranslation';
 import DownloadCV from './DownloadCV';
+import LanguageSelector from './LanguageSelector';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { handleLogoClick } = useEasterEgg();
+    const { t } = useTranslation();
 
     const navLinks = [
-        { to: "/", label: "Home" },
-        { to: "/about", label: "About" },
-        { to: "/projects", label: "My projects" },
-        { to: "/contact", label: "Contact" }
+        { to: "/", label: t('navigation.home', 'Home') },
+        { to: "/about", label: t('navigation.about', 'About') },
+        { to: "/projects", label: t('navigation.projects', 'My projects') },
+        { to: "/contact", label: t('navigation.contact', 'Contact') }
     ];
 
     return (
@@ -78,6 +81,9 @@ const Navbar = () => {
 
                             {/* Menu Desktop - HOVERS AMÉLIORÉS */}
                             <div className="hidden md:flex items-center space-x-1">
+                                {/* Sélecteur de langue */}
+                                <LanguageSelector className="mr-2" />
+                                
                                 {/* Bouton CV */}
                                 <DownloadCV className="mr-2" />
 
@@ -173,6 +179,16 @@ const Navbar = () => {
                                                       pointer-events-none"></div>
 
                                         <nav className="relative flex flex-col space-y-2 mt-8">
+                                            {/* Sélecteur de langue mobile */}
+                                            <div className="mb-4 px-4">
+                                                <LanguageSelector />
+                                            </div>
+                                            
+                                            {/* Bouton CV mobile */}
+                                            <div className="mb-4 px-4">
+                                                <DownloadCV className="w-full" />
+                                            </div>
+                                            
                                             {navLinks.map((link) => (
                                                 <NavLink
                                                     key={link.to}

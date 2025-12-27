@@ -1,12 +1,28 @@
 // Service pour récupérer les données CV depuis la base de données
 import { supabase } from './supabase';
+import { translations } from '../translations';
+import { getCVDataFromTable } from './cvDataService';
 
-export const getCVData = async () => {
+export const getCVData = async (language = 'fr') => {
   try {
-    console.log('🔍 Récupération des données CV depuis la base de données...');
+    console.log('🔍 Récupération des données CV...');
 
-    // Récupérer les expériences
-    const { data: experiences, error: expError } = await supabase
+    // Essayer d'abord la nouvelle table cv_data
+    try {
+      const cvDataFromTable = await getCVDataFromTable(language);
+      if (cvDataFromTable && cvDataFromTable.personal_info) {
+        console.log('✅ Données récupérées depuis cv_data');
+        return cvDataFromTable;
+      }
+    } catch (error) {
+      console.log('⚠️ Erreur cv_data, fallback vers les tables séparées');
+    }
+
+    // Fallback vers les tables séparées (ancien système)
+    console.log('🔄 Utilisation des tables séparées comme fallback...');
+
+    // Récupérer les expériences (work seulement pour le CV)
+    const { data: allExperiences, error: expError } = await supabase
       .from('experiences')
       .select('*')
       .order('start_date', { ascending: false });
@@ -14,6 +30,10 @@ export const getCVData = async () => {
     if (expError) {
       console.error('Erreur expériences:', expError);
     }
+
+    // Séparer work et education
+    const experiences = allExperiences?.filter(exp => exp.type === 'work') || [];
+    const education = allExperiences?.filter(exp => exp.type === 'education') || [];
 
     // Récupérer les compétences
     const { data: skills, error: skillsError } = await supabase
@@ -37,8 +57,22 @@ export const getCVData = async () => {
       console.error('Erreur projets:', projectsError);
     }
 
-    // Données personnelles (statiques pour l'instant, mais peuvent être en DB)
-    const personalInfo = {
+    // Récupérer les données personnelles depuis la base de données
+    const { data: settingsData, error: settingsError } = await supabase
+      .from('cv_settings')
+      .select('*');
+
+    if (settingsError) {
+      console.error('Erreur paramètres CV:', settingsError);
+    }
+
+    // Convertir les paramètres en objet
+    const settings = {};
+    settingsData?.forEach(item => {
+      settings[item.key] = item.value;
+    });
+
+    const personalInfo = settings.personal_info || {
       name: 'Sebbe Mercier',
       title: 'Développeur Full Stack • React & Node.js',
       email: 'info@sebbe-mercier.tech',
@@ -50,8 +84,7 @@ export const getCVData = async () => {
                 Fort de plusieurs années d'expérience, je transforme les idées en solutions digitales innovantes.`
     };
 
-    // Formation (peut être ajoutée en DB plus tard)
-    const education = experiences?.filter(exp => exp.type === 'education') || [];
+    // Formation déjà récupérée plus haut
 
     // Langues (statiques pour l'instant)
     const languages = [
@@ -74,10 +107,12 @@ export const getCVData = async () => {
       experiences: experiences || [],
       skills: skills || [],
       projects: projects || [],
-      education,
+      education: education || [],
       languages,
       achievements,
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
+      language,
+      translations: translations[language] || translations.fr
     };
 
     console.log('✅ Données CV récupérées:', {
@@ -135,7 +170,9 @@ export const getCVData = async () => {
         'Spécialiste React et Node.js',
         'Applications web modernes'
       ],
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
+      language,
+      translations: translations[language] || translations.fr
     };
   }
 };
