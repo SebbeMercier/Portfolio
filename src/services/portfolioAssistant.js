@@ -306,4 +306,5 @@ class PortfolioAssistant {
 }
 
 // Export d'une instance unique
-export default new PortfolioAssistant();
+const portfolioAssistant = new PortfolioAssistant();
+export default portfolioAssistant;

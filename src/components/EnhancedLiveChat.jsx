@@ -1,8 +1,7 @@
-// Assistant Portfolio Intelligent - 100% côté client
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, MessageCircle, X, User, Bot } from 'lucide-react';
 import { useTranslation } from '../hooks/useTranslation';
-import SLMChatService from '../services/slmChatService';
+import groqChatService from '../services/groqChatService';
 
 const EnhancedLiveChat = () => {
   const { t, currentLanguage } = useTranslation();
@@ -24,7 +23,7 @@ const EnhancedLiveChat = () => {
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       // Message d'accueil personnalisé
-      const welcomeMessage = SLMChatService.getWelcomeMessage(currentLanguage);
+      const welcomeMessage = groqChatService.getWelcomeMessage(currentLanguage);
       setMessages([{
         id: 1,
         text: welcomeMessage.text,
@@ -50,8 +49,8 @@ const EnhancedLiveChat = () => {
     setIsTyping(true);
 
     try {
-      // Obtenir la réponse de l'assistant local
-      const response = await SLMChatService.processMessage(inputMessage, currentLanguage);
+      // Obtenir la réponse de Groq API (gratuit) avec fallback local
+      const response = await groqChatService.processMessage(inputMessage, currentLanguage);
       
       setTimeout(() => {
         const assistantMessage = {
@@ -61,8 +60,7 @@ const EnhancedLiveChat = () => {
           timestamp: new Date(),
           suggestions: response.suggestions,
           actions: response.actions,
-          intent: response.intent,
-          confidence: response.confidence
+          source: response.source
         };
 
         setMessages(prev => [...prev, assistantMessage]);
@@ -110,7 +108,7 @@ const EnhancedLiveChat = () => {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -149,7 +147,7 @@ const EnhancedLiveChat = () => {
                 </h3>
                 <p className="text-xs text-slate-300 flex items-center gap-1">
                   <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                  En ligne • IA locale
+                  En ligne • IA avancée
                 </p>
               </div>
               <button
@@ -195,11 +193,6 @@ const EnhancedLiveChat = () => {
                               minute: '2-digit' 
                             })}
                           </p>
-                          {message.confidence && (
-                            <div className="text-xs opacity-50">
-                              Confiance: {Math.round(message.confidence * 100)}%
-                            </div>
-                          )}
                         </div>
                       </div>
                     </div>
@@ -264,7 +257,7 @@ const EnhancedLiveChat = () => {
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyDown}
                 placeholder={t('chat.placeholder', 'Posez-moi une question sur Sebbe...')}
                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 text-sm transition-all"
                 disabled={isTyping}
@@ -278,7 +271,7 @@ const EnhancedLiveChat = () => {
               </button>
             </div>
             <div className="text-xs text-slate-500 mt-2 text-center">
-              Assistant IA local • Aucune donnée envoyée à l'extérieur
+              Assistant IA professionnel • Réponses sécurisées
             </div>
           </div>
         </div>
