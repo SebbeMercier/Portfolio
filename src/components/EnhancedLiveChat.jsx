@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, MessageCircle, X, User, Bot } from 'lucide-react';
 import { useTranslation } from '../hooks/useTranslation';
 import groqChatService from '../services/groqChatService';
+import usePortfolioData from '../hooks/usePortfolioData'; // Nouveau hook
 
 const EnhancedLiveChat = () => {
   const { t, currentLanguage } = useTranslation();
@@ -11,6 +12,16 @@ const EnhancedLiveChat = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  
+  // Hook pour les données du portfolio (pour usage futur)
+  // eslint-disable-next-line no-unused-vars
+  const { 
+    data: portfolioData, 
+    loading: dataLoading, 
+    error: dataError,
+    dataSource,
+    refresh: refreshData 
+  } = usePortfolioData();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

@@ -202,7 +202,8 @@ export const nl = {
     description: "Real-time statistieken van mijn portfolio, automatisch bijgewerkt op basis van projecten en klantfeedback.",
     refreshStats: "Statistieken vernieuwen",
     loading: "Statistieken laden...",
-    live: "Live"
+    live: "Live",
+    lastUpdated: "Laatst bijgewerkt"
   },
 
   // Services sectie

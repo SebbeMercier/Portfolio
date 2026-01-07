@@ -202,7 +202,8 @@ export const en = {
     description: "Real-time statistics from my portfolio, updated automatically based on projects and client feedback.",
     refreshStats: "Refresh statistics",
     loading: "Loading statistics...",
-    live: "Live"
+    live: "Live",
+    lastUpdated: "Last updated"
   },
 
   // Services section

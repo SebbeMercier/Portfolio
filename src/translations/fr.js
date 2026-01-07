@@ -202,7 +202,8 @@ export const fr = {
     description: "Statistiques en temps réel de mon portfolio, mises à jour automatiquement selon les projets et retours clients.",
     refreshStats: "Actualiser les statistiques",
     loading: "Chargement des statistiques...",
-    live: "Live"
+    live: "Live",
+    lastUpdated: "Dernière mise à jour"
   },
 
   // Services section

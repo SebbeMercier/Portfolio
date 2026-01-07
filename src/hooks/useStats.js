@@ -1,6 +1,6 @@
-// useStats.js - Hook pour récupérer les statistiques dynamiques
+// useStats.js - Hook pour récupérer les statistiques dynamiques (OPTIMISÉ)
 import { useState, useEffect, useCallback } from 'react';
-import { getProjects } from '../services/supabaseProjectService';
+import portfolioDataService from '../services/portfolioDataService';
 import { getVisibleTestimonials } from '../services/testimonialsService';
 
 export const useStats = () => {
@@ -13,29 +13,6 @@ export const useStats = () => {
         loading: true,
         error: null
     });
-
-    const calculateExperience = () => {
-        // Tu peux ajuster cette date selon quand tu as commencé
-        const startDate = new Date('2021-01-01'); // Exemple: commencé en 2021
-        const now = new Date();
-        const years = Math.floor((now - startDate) / (365.25 * 24 * 60 * 60 * 1000));
-        return Math.max(1, years); // Au minimum 1 an
-    };
-
-    const extractTechnologies = (projects) => {
-        const techSet = new Set();
-        
-        projects.forEach(project => {
-            // Extraire des tags
-            if (project.tags && Array.isArray(project.tags)) {
-                project.tags.forEach(tag => techSet.add(tag.toLowerCase()));
-            }
-            
-
-        });
-        
-        return techSet.size;
-    };
 
     const calculateAverageRating = (testimonials) => {
         if (!testimonials || testimonials.length === 0) return 0;
@@ -51,19 +28,10 @@ export const useStats = () => {
         try {
             setStats(prev => ({ ...prev, loading: true, error: null }));
 
-            // Récupérer les projets avec fallback
-            let projects = [];
-            try {
-                projects = await getProjects();
-                if (!Array.isArray(projects)) projects = [];
-            } catch (projectError) {
-                console.warn('Could not load projects:', projectError);
-                projects = [];
-            }
+            // Utiliser la nouvelle fonction optimisée du portfolio service
+            const portfolioStats = await portfolioDataService.getPortfolioStats();
             
-            const liveProjects = projects.filter(p => p.status === 'Live' || p.status === 'Completed');
-            
-            // Récupérer les témoignages visibles avec fallback
+            // Récupérer les témoignages pour les clients et la note moyenne
             let testimonials = [];
             try {
                 testimonials = await getVisibleTestimonials();
@@ -73,25 +41,26 @@ export const useStats = () => {
                 testimonials = [];
             }
             
-            // Calculer les technologies uniques
-            const uniqueTechnologies = extractTechnologies(projects);
-            
-            // Calculer l'expérience
-            const experience = calculateExperience();
-            
             // Calculer la note moyenne
             const averageRating = calculateAverageRating(testimonials);
 
-            // S'assurer que toutes les valeurs sont des nombres valides
+            // Combiner les stats du portfolio avec les données des témoignages
             const finalStats = {
-                projects: Math.max(liveProjects.length, 0),
-                clients: Math.max(testimonials.length, 0),
-                technologies: Math.max(uniqueTechnologies, 8), // Au minimum 8 pour être réaliste
-                experience: Math.max(experience, 3), // Au minimum 3 ans
-                averageRating: averageRating > 0 ? Math.round(averageRating * 10) / 10 : 0,
+                projects: portfolioStats.projects,
+                clients: Math.max(testimonials.length, portfolioStats.clients),
+                technologies: portfolioStats.technologies,
+                experience: portfolioStats.experience,
+                averageRating: averageRating > 0 ? averageRating : portfolioStats.averageRating,
                 loading: false,
                 error: null
             };
+
+            console.log('✅ Stats calculées depuis portfolio optimisé:', {
+                projects: finalStats.projects,
+                technologies: finalStats.technologies,
+                clients: finalStats.clients,
+                fromCache: true
+            });
 
             setStats(finalStats);
 
@@ -115,9 +84,11 @@ export const useStats = () => {
     }, [loadStats]);
 
     // Fonction pour recharger les stats manuellement
-    const refreshStats = () => {
+    const refreshStats = useCallback(() => {
+        // Vider le cache du portfolio pour forcer une mise à jour
+        portfolioDataService.clearCache();
         loadStats();
-    };
+    }, [loadStats]);
 
     return {
         ...stats,

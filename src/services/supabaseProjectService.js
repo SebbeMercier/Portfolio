@@ -4,6 +4,28 @@ import { supabase } from '../config/supabase';
 const PROJECTS_TABLE = 'projects';
 const STORAGE_BUCKET = 'project-images';
 
+// Créer le bucket de stockage s'il n'existe pas
+export const createStorageBucket = async () => {
+    try {
+        const { data, error } = await supabase.storage.createBucket(STORAGE_BUCKET, {
+            public: true,
+            allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+            fileSizeLimit: 5242880 // 5MB
+        });
+
+        if (error && !error.message.includes('already exists')) {
+            console.error('Error creating bucket:', error);
+            return { success: false, error: error.message };
+        }
+
+        console.log('✅ Storage bucket ready:', STORAGE_BUCKET);
+        return { success: true };
+    } catch (error) {
+        console.error('Error creating bucket:', error);
+        return { success: false, error: error.message };
+    }
+};
+
 // Récupérer tous les projets
 export const getProjects = async () => {
     try {
@@ -78,13 +100,51 @@ export const deleteProject = async (projectId, imageUrl = null) => {
 // Upload une image dans Supabase Storage
 export const uploadImage = async (file) => {
     try {
+        console.log('🔄 Starting image upload...', {
+            fileName: file.name,
+            fileSize: file.size,
+            fileType: file.type
+        });
+
+        // Vérifier la taille du fichier (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            return { success: false, error: 'File size must be less than 5MB' };
+        }
+
+        // Vérifier le type de fichier
+        if (!file.type.startsWith('image/')) {
+            return { success: false, error: 'File must be an image' };
+        }
+
         // Générer un nom unique
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
         const filePath = `${fileName}`;
 
+        console.log('📁 Generated file path:', filePath);
+
+        // Vérifier si le bucket existe
+        const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+        console.log('🪣 Available buckets:', buckets);
+        
+        if (bucketsError) {
+            console.error('❌ Error listing buckets:', bucketsError);
+            return { success: false, error: `Bucket error: ${bucketsError.message}` };
+        }
+
+        const bucketExists = buckets?.some(bucket => bucket.name === STORAGE_BUCKET);
+        if (!bucketExists) {
+            console.log('🔧 Storage bucket does not exist, attempting to create it...');
+            const createResult = await createStorageBucket();
+            if (!createResult.success) {
+                return { success: false, error: `Failed to create storage bucket: ${createResult.error}. Please create the '${STORAGE_BUCKET}' bucket manually in your Supabase dashboard under Storage.` };
+            }
+        }
+
+        console.log('✅ Storage bucket exists, proceeding with upload...');
+
         // Upload le fichier
-        const { error } = await supabase.storage
+        const { data, error } = await supabase.storage
             .from(STORAGE_BUCKET)
             .upload(filePath, file, {
                 cacheControl: '3600',
@@ -92,19 +152,23 @@ export const uploadImage = async (file) => {
             });
 
         if (error) {
-            console.error('Error uploading image:', error);
-            return { success: false, error: error.message };
+            console.error('❌ Error uploading image:', error);
+            return { success: false, error: `Upload failed: ${error.message}` };
         }
+
+        console.log('✅ Upload successful:', data);
 
         // Récupérer l'URL publique
         const { data: { publicUrl } } = supabase.storage
             .from(STORAGE_BUCKET)
             .getPublicUrl(filePath);
 
+        console.log('🔗 Generated public URL:', publicUrl);
+
         return { success: true, url: publicUrl };
     } catch (error) {
-        console.error('Error uploading image:', error);
-        return { success: false, error: error.message };
+        console.error('💥 Unexpected error uploading image:', error);
+        return { success: false, error: `Unexpected error: ${error.message}` };
     }
 };
 

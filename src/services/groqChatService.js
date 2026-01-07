@@ -8,7 +8,7 @@ class GroqChatService {
     this.apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
     this.apiKey = process.env.REACT_APP_GROQ_API_KEY;
     this.isAvailable = !!this.apiKey;
-    this.model = 'llama-3.1-70b-versatile'; // Modèle gratuit puissant
+    this.model = 'llama-3.1-8b-instant'; // Modèle gratuit et rapide encore supporté
     
     console.log(this.isAvailable ? '✅ Groq API configurée' : '⚠️ Groq API non configurée, utilisation du fallback local');
     
@@ -36,43 +36,23 @@ class GroqChatService {
     try {
       // Récupérer les données réelles du portfolio
       const portfolioData = await portfolioDataService.getPortfolioData();
-      const formattedData = portfolioDataService.formatForAI(portfolioData);
+      
+      // Contexte intelligent basé sur la question
+      const formattedData = portfolioDataService.formatForAI(portfolioData, message, 2000); // Réduit de 4000 à 2000
       
       const systemPrompt = this.getSystemPrompt(language, formattedData);
       
-      const response = await fetch(this.apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: this.model,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: message }
-          ],
-          max_tokens: 250,
-          temperature: 0.7,
-          top_p: 0.9
-        }),
-        timeout: 10000
-      });
-
-      if (!response.ok) {
-        throw new Error(`Groq API Error: ${response.status}`);
+      // Vérifier la taille du prompt (estimation)
+      const promptSize = systemPrompt.length / 4; // ~4 chars par token
+      if (promptSize > 3000) { // Réduit de 5000 à 3000
+        console.warn(`⚠️ Prompt potentiellement trop long: ~${Math.round(promptSize)} tokens`);
+        // Réduire encore le contexte si nécessaire
+        const reducedData = portfolioDataService.formatForAI(portfolioData, message, 1000); // Réduit de 2000 à 1000
+        const reducedPrompt = this.getSystemPrompt(language, reducedData);
+        return await this.sendToGroq(reducedPrompt, message);
       }
-
-      const data = await response.json();
       
-      return {
-        text: data.choices[0].message.content,
-        source: 'groq',
-        model: this.model,
-        timestamp: new Date().toISOString(),
-        suggestions: this.generateSuggestions(message, language),
-        actions: this.generateActions(message)
-      };
+      return await this.sendToGroq(systemPrompt, message);
 
     } catch (error) {
       console.error('Erreur Groq API:', error);
@@ -82,61 +62,121 @@ class GroqChatService {
     }
   }
 
-  // Prompt système optimisé pour Groq avec données réelles
+  // Méthode séparée pour l'appel API
+  async sendToGroq(systemPrompt, userMessage) {
+    try {
+      // Vérifier la taille du prompt
+      const promptLength = systemPrompt.length;
+      console.log('📏 Taille du prompt système:', promptLength, 'caractères');
+      
+      if (promptLength > 8000) {
+        console.warn('⚠️ Prompt trop long, troncature à 8000 caractères');
+        systemPrompt = systemPrompt.substring(0, 8000) + '\n\n[Contexte tronqué pour respecter les limites]';
+      }
+
+      const requestBody = {
+        model: this.model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage }
+        ],
+        max_tokens: 300,
+        temperature: 0.7,
+        top_p: 0.9
+      };
+
+      console.log('🚀 Envoi vers Groq:', {
+        model: this.model,
+        systemPromptLength: systemPrompt.length,
+        userMessage: userMessage.substring(0, 100) + '...'
+      });
+
+      const response = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Groq API Error Response:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText
+        });
+        throw new Error(`Groq API Error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      
+      return {
+        text: data.choices[0].message.content,
+        source: 'groq',
+        model: this.model,
+        timestamp: new Date().toISOString(),
+        suggestions: this.generateSuggestions(userMessage, 'fr'),
+        actions: this.generateActions(userMessage)
+      };
+    } catch (error) {
+      console.error('💥 Erreur dans sendToGroq:', error);
+      throw error;
+    }
+  }
+
+  // Prompt système optimisé et adaptatif
   getSystemPrompt(language, portfolioData) {
-    const prompts = {
+    const baseInstructions = {
       fr: `Tu es l'assistant personnel de Sebbe Mercier, développeur Full Stack français.
-
-INFORMATIONS PERSONNELLES :
-${portfolioData.personal}
-
-COMPÉTENCES TECHNIQUES :
-${portfolioData.skills}
-
-EXPÉRIENCE PROFESSIONNELLE :
-${portfolioData.experiences}
-
-PROJETS RÉALISÉS :
-${portfolioData.projects}
 
 INSTRUCTIONS :
 - Réponds de manière professionnelle et concise (max 200 mots)
 - Utilise des emojis avec parcimonie pour rendre tes réponses engageantes
-- Reste dans le contexte de son portfolio professionnel
-- Si les informations détaillées ne sont pas disponibles, invite à explorer le portfolio ou à le contacter directement
+- Si les informations détaillées ne sont pas disponibles, invite à explorer le portfolio
 - Redirige vers ses projets ou son contact pour plus de détails
 - Sois naturel et conversationnel, pas robotique
-- Mentionne qu'il est développeur Full Stack avec de l'expérience en React et technologies modernes
 
-Réponds en français de manière naturelle et professionnelle.`,
+INFORMATIONS DISPONIBLES :`,
 
       en: `You are Sebbe Mercier's personal assistant, a French Full Stack developer.
-
-PERSONAL INFORMATION:
-${portfolioData.personal}
-
-TECHNICAL SKILLS:
-${portfolioData.skills}
-
-PROFESSIONAL EXPERIENCE:
-${portfolioData.experiences}
-
-COMPLETED PROJECTS:
-${portfolioData.projects}
 
 INSTRUCTIONS:
 - Respond professionally and concisely (max 200 words)
 - Use emojis sparingly to make responses engaging
-- Stay within his professional portfolio context
-- If detailed information is not available, invite to explore the portfolio or contact him directly
+- If detailed information is not available, invite to explore the portfolio
 - Redirect to his projects or contact for more details
 - Be natural and conversational, not robotic
-- Mention he's a Full Stack developer with experience in React and modern technologies
 
-Respond in English naturally and professionally.`
+AVAILABLE INFORMATION:`
     };
 
-    return prompts[language] || prompts.fr;
+    const contextSections = [];
+    
+    // Ajouter seulement les sections disponibles
+    if (portfolioData.personal) {
+      contextSections.push(`PROFIL :\n${portfolioData.personal}`);
+    }
+    
+    if (portfolioData.summary) {
+      contextSections.push(`RÉSUMÉ :\n${portfolioData.summary}`);
+    }
+    
+    if (portfolioData.projects) {
+      contextSections.push(`PROJETS SÉLECTIONNÉS :\n${portfolioData.projects}`);
+    }
+    
+    if (portfolioData.skills) {
+      contextSections.push(`COMPÉTENCES PRINCIPALES :\n${portfolioData.skills}`);
+    }
+    
+    if (portfolioData.experiences) {
+      contextSections.push(`EXPÉRIENCES RÉCENTES :\n${portfolioData.experiences}`);
+    }
+
+    const prompt = baseInstructions[language] || baseInstructions.fr;
+    return `${prompt}\n\n${contextSections.join('\n\n')}\n\nRéponds en ${language === 'en' ? 'anglais' : 'français'} de manière naturelle et professionnelle.`;
   }
 
   // Générer des suggestions contextuelles

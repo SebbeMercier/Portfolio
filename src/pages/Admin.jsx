@@ -1,7 +1,7 @@
 // Admin.jsx - Panel d'administration pour gérer les projets et témoignages avec Supabase
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, Save, X, Eye, LogOut, Upload, RefreshCw, Star, MessageSquare, EyeOff, FileText } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, Eye, LogOut, Upload, RefreshCw, Star, MessageSquare, EyeOff, FileText, Zap } from 'lucide-react';
 import { supabase, isEmailAllowed } from '../config/supabase';
 import { getProjects, saveProject, deleteProject, initializeSupabase, uploadImage } from '../services/supabaseProjectService';
 import { getTestimonials, saveTestimonial, deleteTestimonial, toggleTestimonialVisibility, initializeTestimonials } from '../services/testimonialsService';
@@ -10,10 +10,12 @@ import { validateImageFile } from '../services/imageUploadService';
 import { StatsWidget } from '../components/StatsWidget';
 import CVManager from '../components/CVManager';
 import CVDataManager from '../components/CVDataManager';
+import ProjectFormAI from '../components/ProjectFormAI';
+import PerformanceManager from '../components/PerformanceManager';
 
 const Admin = () => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('projects'); // 'projects', 'testimonials', 'feedback', 'cv', ou 'cvdata'
+    const [activeTab, setActiveTab] = useState('projects'); // 'projects', 'testimonials', 'feedback', 'cv', 'cvdata', ou 'performance'
     
     // Projects state
     const [projects, setProjects] = useState([]);
@@ -148,7 +150,6 @@ const Admin = () => {
     // Créer un nouveau projet
     const handleNewProject = () => {
         const newProject = {
-            id: Math.max(...projects.map(p => p.id), 0) + 1,
             title: '',
             description: '',
             tags: [],
@@ -156,16 +157,36 @@ const Admin = () => {
             links: {},
             features: [],
             year: new Date().getFullYear().toString(),
-            status: 'In Development',
+            status: 'completed',
             duration: '',
             role: '',
             client: '',
             category: '',
-            challenges: '',
             results: '',
             team: '',
             budget: '',
-            metrics: {}
+            metrics: {},
+            
+            // Nouveaux champs pour l'IA (optionnels)
+            short_description: '',
+            technologies: [],
+            visibility: 'public',
+            live_url: '',
+            github_url: '',
+            demo_url: '',
+            start_date: null,
+            end_date: null,
+            duration_months: null,
+            team_size: 1,
+            my_role: '',
+            challenges: [],
+            solutions: [],
+            screenshots: [],
+            complexity_level: 3,
+            impact_score: 5,
+            is_featured: false,
+            featured: false,
+            ai_priority: 5
         };
         setCurrentProject(newProject);
         setImagePreview(null);
@@ -208,22 +229,57 @@ const Admin = () => {
             return;
         }
 
+        console.log('💾 Saving project:', currentProject);
         setIsSaving(true);
-        const result = await saveProject(currentProject);
         
-        if (result.success) {
-            setSuccessMessage('✅ Project saved successfully!');
-            await loadProjects();
-            setIsEditing(false);
-            setCurrentProject(null);
-            setImagePreview(null);
-            setShowPreview(false);
-        } else {
-            setError('❌ Failed to save: ' + result.error);
+        try {
+            // Nettoyer les données avant sauvegarde
+            const cleanProject = {
+                ...currentProject,
+                // S'assurer que les arrays sont bien des arrays
+                tags: Array.isArray(currentProject.tags) ? currentProject.tags : [],
+                features: Array.isArray(currentProject.features) ? currentProject.features : [],
+                technologies: Array.isArray(currentProject.technologies) ? currentProject.technologies : [],
+                challenges: Array.isArray(currentProject.challenges) ? currentProject.challenges : [],
+                solutions: Array.isArray(currentProject.solutions) ? currentProject.solutions : [],
+                screenshots: Array.isArray(currentProject.screenshots) ? currentProject.screenshots : [],
+                // S'assurer que les objets sont bien des objets
+                links: currentProject.links || {},
+                metrics: currentProject.metrics || {},
+                // Valeurs par défaut pour les champs requis
+                team_size: currentProject.team_size || 1,
+                complexity_level: currentProject.complexity_level || 3,
+                impact_score: currentProject.impact_score || 5,
+                ai_priority: currentProject.ai_priority || 5,
+                visibility: currentProject.visibility || 'public',
+                status: currentProject.status || 'completed'
+            };
+
+            console.log('🧹 Cleaned project data:', cleanProject);
+            
+            const result = await saveProject(cleanProject);
+            
+            if (result.success) {
+                setSuccessMessage('✅ Project saved successfully!');
+                await loadProjects();
+                setIsEditing(false);
+                setCurrentProject(null);
+                setImagePreview(null);
+                setShowPreview(false);
+            } else {
+                console.error('❌ Save failed:', result.error);
+                setError('❌ Failed to save: ' + result.error);
+            }
+        } catch (error) {
+            console.error('💥 Unexpected save error:', error);
+            setError('❌ Unexpected error: ' + error.message);
         }
         
         setIsSaving(false);
-        setTimeout(() => setSuccessMessage(''), 3000);
+        setTimeout(() => {
+            setSuccessMessage('');
+            setError('');
+        }, 5000);
     };
 
     // Annuler l'édition
@@ -267,30 +323,44 @@ const Admin = () => {
         const file = e.target.files[0];
         if (!file) return;
 
-        if (!validateImageFile(file)) return;
+        console.log('🖼️ Image upload started:', {
+            name: file.name,
+            size: file.size,
+            type: file.type
+        });
+
+        if (!validateImageFile(file)) {
+            console.log('❌ Image validation failed');
+            return;
+        }
 
         try {
             setSuccessMessage('⏳ Uploading image...');
+            setError('');
             
             // Upload vers Supabase Storage
             const result = await uploadImage(file);
+            
+            console.log('📤 Upload result:', result);
             
             if (result.success) {
                 updateField('image', result.url);
                 setImagePreview(result.url);
                 setSuccessMessage('✅ Image uploaded successfully!');
+                console.log('✅ Image uploaded to:', result.url);
             } else {
+                console.error('❌ Upload failed:', result.error);
                 setError('❌ Failed to upload: ' + result.error);
             }
             
             setTimeout(() => {
                 setSuccessMessage('');
                 setError('');
-            }, 3000);
+            }, 5000);
         } catch (error) {
-            console.error('Error uploading image:', error);
-            setError('❌ Failed to upload image');
-            setTimeout(() => setError(''), 3000);
+            console.error('💥 Unexpected upload error:', error);
+            setError('❌ Unexpected upload error: ' + error.message);
+            setTimeout(() => setError(''), 5000);
         }
     };
 
@@ -555,6 +625,43 @@ const Admin = () => {
                             Initialize Supabase
                         </button>
                         <button
+                            onClick={async () => {
+                                setIsLoading(true);
+                                const { createStorageBucket } = await import('../services/supabaseProjectService');
+                                const result = await createStorageBucket();
+                                if (result.success) {
+                                    setSuccessMessage('✅ Storage bucket created successfully!');
+                                } else {
+                                    setError('❌ Failed to create storage bucket: ' + result.error);
+                                }
+                                setIsLoading(false);
+                                setTimeout(() => {
+                                    setSuccessMessage('');
+                                    setError('');
+                                }, 3000);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                            disabled={isLoading}
+                        >
+                            Create Storage Bucket
+                        </button>
+                        <button
+                            onClick={async () => {
+                                setIsLoading(true);
+                                const portfolioDataService = (await import('../services/portfolioDataService')).default;
+                                portfolioDataService.clearCache();
+                                const newData = await portfolioDataService.getPortfolioData();
+                                console.log('🔄 Cache vidé, nouvelles données:', newData);
+                                setSuccessMessage('✅ Cache IA vidé et données rechargées!');
+                                setIsLoading(false);
+                                setTimeout(() => setSuccessMessage(''), 3000);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+                            disabled={isLoading}
+                        >
+                            Vider Cache IA
+                        </button>
+                        <button
                             onClick={() => navigate('/projects')}
                             className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
                         >
@@ -645,6 +752,17 @@ const Admin = () => {
                         >
                             <FileText className="w-4 h-4" />
                             CV Data
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('performance')}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+                                activeTab === 'performance'
+                                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                                    : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                            }`}
+                        >
+                            <Zap className="w-4 h-4" />
+                            Performance IA
                         </button>
 
                     </div>
@@ -948,6 +1066,23 @@ const Admin = () => {
                         {/* Intégrer CVDataManager */}
                         <div className="bg-gray-900/30 backdrop-blur-sm border border-white/5 rounded-2xl p-6">
                             <CVDataManager />
+                        </div>
+                    </>
+                ) : activeTab === 'performance' && !isEditing && !isEditingTestimonial ? (
+                    <>
+                        {/* Performance IA Tab */}
+                        <div className="mb-8">
+                            <h2 className="text-2xl font-bold text-white mb-4">
+                                Performance <span className="text-purple-400">IA</span>
+                            </h2>
+                            <p className="text-gray-400 text-sm mb-6">
+                                Optimisation et monitoring des performances de l'assistant IA avec cache SQL.
+                            </p>
+                        </div>
+                        
+                        {/* Intégrer PerformanceManager */}
+                        <div className="bg-gray-900/30 backdrop-blur-sm border border-white/5 rounded-2xl p-6">
+                            <PerformanceManager />
                         </div>
                     </>
                 ) : isEditingTestimonial ? (
@@ -1505,6 +1640,12 @@ const Admin = () => {
                                     />
                                 </div>
                             </div>
+
+                            {/* Composant IA - Nouveaux champs optimisés */}
+                            <ProjectFormAI 
+                                currentProject={currentProject} 
+                                updateField={updateField} 
+                            />
                         </div>
                         )}
                     </div>

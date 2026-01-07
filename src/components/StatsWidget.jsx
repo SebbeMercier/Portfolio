@@ -1,9 +1,18 @@
 // StatsWidget.jsx - Widget compact pour afficher les stats en temps réel
-import { TrendingUp, Users, Code2, Star, RefreshCw } from 'lucide-react';
-import { useStats } from '../hooks/useStats';
+import { TrendingUp, Users, Code2, Star, RefreshCw, Zap } from 'lucide-react';
+import { useRealtimeStats } from '../hooks/useRealtimeStats';
 
 export function StatsWidget({ compact = false }) {
-    const { projects, clients, technologies, averageRating, loading, refreshStats } = useStats();
+    const { 
+        projects, 
+        clients, 
+        technologies, 
+        averageRating, 
+        loading, 
+        refreshStats,
+        lastUpdated,
+        isAutoRefreshActive
+    } = useRealtimeStats(60000); // Auto-refresh toutes les 60 secondes pour le widget
 
     const stats = [
         {
@@ -41,6 +50,9 @@ export function StatsWidget({ compact = false }) {
         return (
             <div className="flex items-center gap-4 p-4 bg-gray-800/50 rounded-lg border border-white/10">
                 <div className="flex items-center gap-2">
+                    {isAutoRefreshActive && (
+                        <Zap className="w-3 h-3 text-green-400" />
+                    )}
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                     <span className="text-xs text-green-400 font-medium">Live Stats</span>
                 </div>
@@ -57,13 +69,20 @@ export function StatsWidget({ compact = false }) {
                     ))}
                 </div>
 
-                <button
-                    onClick={refreshStats}
-                    className="ml-auto p-1 hover:bg-gray-700 rounded transition-colors"
-                    disabled={loading}
-                >
-                    <RefreshCw className={`w-4 h-4 text-gray-400 ${loading ? 'animate-spin' : ''}`} />
-                </button>
+                <div className="ml-auto flex items-center gap-2">
+                    {lastUpdated && (
+                        <span className="text-xs text-gray-500">
+                            {lastUpdated.toLocaleTimeString()}
+                        </span>
+                    )}
+                    <button
+                        onClick={refreshStats}
+                        className="p-1 hover:bg-gray-700 rounded transition-colors"
+                        disabled={loading}
+                    >
+                        <RefreshCw className={`w-4 h-4 text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+                    </button>
+                </div>
             </div>
         );
     }
@@ -77,6 +96,9 @@ export function StatsWidget({ compact = false }) {
                             <stat.icon className={`w-5 h-5 ${stat.color}`} />
                         </div>
                         <div className="flex items-center gap-1">
+                            {isAutoRefreshActive && (
+                                <Zap className="w-2 h-2 text-green-400" />
+                            )}
                             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                             <span className="text-xs text-green-400">Live</span>
                         </div>
@@ -92,6 +114,11 @@ export function StatsWidget({ compact = false }) {
                             )}
                         </div>
                         <p className="text-sm text-gray-400">{stat.label}</p>
+                        {lastUpdated && (
+                            <p className="text-xs text-gray-500">
+                                {lastUpdated.toLocaleTimeString()}
+                            </p>
+                        )}
                     </div>
                 </div>
             ))}

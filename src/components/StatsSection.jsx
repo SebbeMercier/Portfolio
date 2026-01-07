@@ -1,14 +1,25 @@
-// StatsSection.jsx - Section de statistiques animées avec données dynamiques
+// StatsSection.jsx - Section de statistiques animées avec données dynamiques temps réel
 import { useEffect, useRef, useState, useMemo } from 'react';
-import { Code2, Rocket, Users, Award, RefreshCw } from 'lucide-react';
+import { Code2, Rocket, Users, Award, RefreshCw, Zap } from 'lucide-react';
 import { animate } from 'animejs';
-import { useStats } from '../hooks/useStats';
+import { useRealtimeStats } from '../hooks/useRealtimeStats';
 import { useTranslation } from '../hooks/useTranslation';
 
 export function StatsSection() {
     const sectionRef = useRef(null);
     const [hasAnimated, setHasAnimated] = useState(false);
-    const { projects, clients, technologies, experience, averageRating, loading, error, refreshStats } = useStats();
+    const { 
+        projects, 
+        clients, 
+        technologies, 
+        experience, 
+        averageRating, 
+        loading, 
+        error, 
+        refreshStats,
+        lastUpdated,
+        isAutoRefreshActive
+    } = useRealtimeStats(30000); // Auto-refresh toutes les 30 secondes
     const { t } = useTranslation();
 
     // Configuration des stats avec données dynamiques
@@ -107,25 +118,45 @@ export function StatsSection() {
     return (
         <section ref={sectionRef} className="py-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
-                {/* Header avec bouton refresh */}
+                {/* Header avec bouton refresh et indicateur temps réel */}
                 <div className="text-center mb-12">
                     <div className="flex items-center justify-center gap-4 mb-4">
                         <h2 className="text-3xl lg:text-4xl font-bold text-white">
                             {t('stats.title', 'By the')} <span className="text-purple-400">{t('stats.numbers', 'Numbers')}</span>
                         </h2>
-                        {!loading && (
-                            <button
-                                onClick={refreshStats}
-                                className="p-2 bg-gray-800/50 hover:bg-gray-700/50 border border-white/10 rounded-lg transition-colors"
-                                title={t('stats.refreshStats', 'Refresh statistics')}
-                            >
-                                <RefreshCw className="w-4 h-4 text-gray-400 hover:text-white" />
-                            </button>
-                        )}
+                        
+                        <div className="flex items-center gap-2">
+                            {/* Indicateur temps réel */}
+                            {isAutoRefreshActive && (
+                                <div className="flex items-center gap-1 px-2 py-1 bg-green-500/10 border border-green-500/20 rounded-lg">
+                                    <Zap className="w-3 h-3 text-green-400" />
+                                    <span className="text-xs text-green-400 font-medium">Real-time</span>
+                                </div>
+                            )}
+                            
+                            {/* Bouton refresh */}
+                            {!loading && (
+                                <button
+                                    onClick={refreshStats}
+                                    className="p-2 bg-gray-800/50 hover:bg-gray-700/50 border border-white/10 rounded-lg transition-colors"
+                                    title={t('stats.refreshStats', 'Refresh statistics')}
+                                >
+                                    <RefreshCw className="w-4 h-4 text-gray-400 hover:text-white" />
+                                </button>
+                            )}
+                        </div>
                     </div>
-                    <p className="text-gray-400 max-w-2xl mx-auto">
+                    
+                    <p className="text-gray-400 max-w-2xl mx-auto mb-2">
                         {t('stats.description', 'Real-time statistics from my portfolio, updated automatically based on projects and client feedback.')}
                     </p>
+                    
+                    {/* Timestamp de dernière mise à jour */}
+                    {lastUpdated && (
+                        <p className="text-xs text-gray-500">
+                            {t('stats.lastUpdated', 'Last updated')}: {lastUpdated.toLocaleTimeString()}
+                        </p>
+                    )}
                 </div>
 
                 {/* Loading state */}
